@@ -1,12 +1,10 @@
-import java.util.HashMap;
 import java.util.Objects;
 
-public class Subtask extends Task{
+public class Subtask extends Task {
     private Integer epicId;
 
     public Subtask(String nameTask, String description, String status) {
         super(nameTask, description, status);
-
     }
 
     @Override
@@ -22,8 +20,6 @@ public class Subtask extends Task{
     public int hashCode() {
         return Objects.hash(super.hashCode(), epicId);
     }
-
-
 
     public Integer getEpicId() {
         return epicId;
@@ -43,6 +39,3 @@ public class Subtask extends Task{
                 '}';
     }
 }
-
-//Сергей, методы добавления задач могут возвращать Integer значение id созданной задачи. Его и используешь в поле epicId.
-//        И конечно при добавлении сабтаска, нужно его добавить в список эпика.

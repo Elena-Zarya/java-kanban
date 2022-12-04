@@ -5,14 +5,10 @@ public class Task {
     private String description;
     private String status;
 
-
-
-
     public Task(String nameTask, String description, String status) {
         this.nameTask = nameTask;
         this.description = description;
         this.status = status;
-      //  id++;
     }
 
     public String getNameTask() {
@@ -38,14 +34,6 @@ public class Task {
     public void setStatus(String status) {
         this.status = status;
     }
-
-//    public Integer getId() {
-//        return id;
-//    }
-//
-//    public void setId(Integer id) {
-//        this.id = id;
-//    }
 
     @Override
     public boolean equals(Object o) {

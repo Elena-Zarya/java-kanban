@@ -1,18 +1,13 @@
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Storage {
-    private HashMap<Integer,Task> tasks = new HashMap<>();
-    private HashMap <Integer, Epic> epics = new HashMap<>();
-    private HashMap<Integer,Subtask> subtasks = new HashMap<>();
+    private HashMap<Integer, Task> tasks = new HashMap<>();
+    private HashMap<Integer, Epic> epics = new HashMap<>();
+    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
 
     private Integer taskId = 0;
     private Integer epicId = 0;
     private Integer subtaskId = 0;
-
-
-//ArrayList<Subtask> b = a.getSubtasks();
-
 
     public Integer getTaskId() {
         return taskId;
@@ -43,7 +38,7 @@ public class Storage {
     }
 
     public void setTasks(Integer id, Task task) {
-       tasks.put(id, task);
+        tasks.put(id, task);
     }
 
     public HashMap<Integer, Epic> getEpics() {
@@ -59,32 +54,7 @@ public class Storage {
     }
 
     public void setSubtasks(Integer id, Subtask subtask, Integer epicId) {
-        epics.get(epicId).setSubtasksList(subtask);
+        epics.get(epicId).setSubtasksList(id);
         subtasks.put(id, subtask);
     }
-
-
-//    private void setEpicStatus(){
-//
-//        for (Integer i: epics.keySet()){
-//            ArrayList<String> statuss = new ArrayList<>();
-////            String statusEpic;
-//
-//            for (Subtask s: epics.get(i).getSubtasksList()) { // == null){
-//                statuss.add(s.getStatus());
-//            }
-//            if ((statuss.size() == 0) || (!statuss.contains("DONE") && !statuss.contains("IN_PROGRESS"))){
-//                   epics.get(i).setStatus("NEW");
-//            }
-//            else if (!statuss.contains("NEW") && !statuss.contains("IN_PROGRESS")) {
-//                epics.get(i).setStatus("DONE");
-//            }
-//            else
-//                epics.get(i).setStatus("IN_PROGRESS");
-//
-////            if (s.getStatus().equals("NEW")){                                 //ДОПИСАТЬ
-////                    epics.get(i).setStatus("NEW");
-////                }
-//            }
-//    }
 }
