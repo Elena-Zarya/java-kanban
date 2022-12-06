@@ -1,41 +1,27 @@
 import java.util.ArrayList;
 
 public class Manager {
-    Storage storage = new Storage();
+    private Storage storage = new Storage();
 
     public ArrayList<Task> getAllTask() {                                        //получить списки задач
-
-        ArrayList<Task> tasksList = new ArrayList<>();
-
-        for (Task task : storage.getTasks().values()) {
-            tasksList.add(task);
-        }
-        return tasksList;
+        return new ArrayList<>(storage.getTasks().values());
     }
 
     public ArrayList<Epic> getAllEpic() {
-        ArrayList<Epic> epicsList = new ArrayList<>();
-        for (Epic epic : storage.getEpics().values()) {
-            epicsList.add(epic);
-        }
-        return epicsList;
+        return new ArrayList<>(storage.getEpics().values());
     }
 
     public ArrayList<Subtask> getAllSubtask() {
-        ArrayList<Subtask> subtasksList = new ArrayList<>();
-        for (Subtask subtask : storage.getSubtasks().values()) {
-            subtasksList.add(subtask);
-        }
-        return subtasksList;
+        return new ArrayList<>(storage.getSubtasks().values());
     }
 
-    public ArrayList<Subtask> getAllSubtask(Integer epicId) {               //Получение списка всех подзадач определённого эпика. ПРОВЕРИТЬ
-        ArrayList<Subtask> subtasksList = new ArrayList<>();
-        if (storage.getEpics().get(epicId) != null) {
-            for (int i = 0; i < storage.getEpics().get(epicId).getSubtasksList().size(); i++) {
-                Integer idSub = storage.getEpics().get(epicId).getSubtasksList().get(i);
-                subtasksList.add(storage.getSubtasks().get(idSub));
+    public ArrayList<Subtask> getAllSubtask(int epicId) {               //Получение списка всех подзадач определённого эпика.
+        if (storage.getEpics().containsKey(epicId)) {
+            ArrayList<Subtask> subtasksList = new ArrayList<>();
+            for (Integer subtaskId: storage.getEpics().get(epicId).getSubtasksList()) {
+                subtasksList.add(storage.getSubtasks().get(subtaskId));
             }
+
             return subtasksList;
         } else {
             return null;
@@ -55,99 +41,107 @@ public class Manager {
         storage.getSubtasks().clear();
         for (Integer i : storage.getEpics().keySet()) {
             storage.getEpics().get(i).getSubtasksList().clear();
+            storage.getEpics().get(i).setStatus("NEW");
         }
-        setEpicStatus();
     }
 
-    public Task getTask(Integer id) {                      //получение по идентификатору
+    public Task getTask(int id) {                      //получение по идентификатору
         return storage.getTasks().get(id);
     }
 
-    public Epic getEpic(Integer id) {
+    public Epic getEpic(int id) {
         return storage.getEpics().get(id);
     }
 
-    public Subtask getSubtask(Integer id) {
+    public Subtask getSubtask(int id) {
         return storage.getSubtasks().get(id);
     }
 
-    public void addTask(Task task) {                           //добавление задач
+    public Integer addTask(Task task) {                           //добавление задач
         int id = storage.getTaskId() + 1;
         storage.setTaskId(id);
+        task.setId(id);
         storage.setTasks(id, task);
+        return task.getId();
     }
 
-    public void addEpic(Epic epic) {
+    public Integer addEpic(Epic epic) {
         int id = storage.getEpicId() + 1;
         storage.setEpicId(id);
+        epic.setId(id);
         storage.setEpics(id, epic);
+        return  epic.getId();
     }
 
-    public void addSubtask(Subtask subtask, Integer epicId) {
+    public Integer addSubtask(Subtask subtask, int epicId) {
         int id = storage.getSubtaskId() + 1;
         storage.setSubtaskId(id);
+        subtask.setId(id);
         storage.setSubtasks(id, subtask, epicId);
         subtask.setEpicId(epicId);
-        setEpicStatus();
+        updateEpicStatus(epicId);
+        return subtask.getId();
     }
 
-    public void updateTask(Task task, Integer id) {                   //обновление задач
+    public Task updateTask(Task task, int id) {                   //обновление задач
         if (storage.getTasks().containsKey(id)) {
             storage.setTasks(id, task);
-        } else {
-            System.out.println("Задача с таким дентификатором не найдена");
+            storage.getTasks().get(id).setId(id);
         }
+        return getTask(id);
+
     }
 
-    public void updateEpic(Epic epic, Integer id) {
+    public Epic updateEpic(String nameTask, String description, int id) {
         if (storage.getEpics().containsKey(id)) {
-            storage.setEpics(id, epic);
-        } else {
-            System.out.println("Задача с таким дентификатором не найдена");
+            storage.getEpics().get(id).setNameTask(nameTask);
+            storage.getEpics().get(id).setDescription(description);
         }
+        return getEpic(id);
     }
 
-    public void updateSubtask(Subtask subtask, Integer id, Integer epicId) {
+    public Subtask updateSubtask(Subtask subtask, int id, int epicId) {
         if (storage.getSubtasks().containsKey(id)) {
-            // storage.setSubtasks(id, subtask, epicId);
+            storage.setSubtasks(id, subtask, epicId);
+            storage.getSubtasks().get(id).setId(id);
             subtask.setEpicId(epicId);
-            setEpicStatus();
-        } else {
-            System.out.println("Задача с таким дентификатором не найдена");
+            updateEpicStatus(epicId);
         }
+        return getSubtask(id);
     }
 
-    public void deleteTask(Integer id) {                      //удаление по идентификатору
+    public void deleteTask(int id) {                      //удаление по идентификатору
         storage.getTasks().remove(id);
     }
 
-    public void deleteEpic(Integer id) {
+    public void deleteEpic(int id) {
         for (Integer i : storage.getEpics().get(id).getSubtasksList()) {
             storage.getSubtasks().remove(i);
         }
         storage.getEpics().remove(id);
     }
 
-    public void deleteSubtask(Integer id, Integer epicId) {
-        storage.getSubtasks().remove(id);
-        storage.getEpics().get(epicId).getSubtasksList().remove(id);
-        setEpicStatus();
+    public void deleteSubtask(Integer id, int epicId) {           //Если заменить Integer id на int id, то remove(id) ужаляет по индексу, а не по значению
+        if (storage.getEpics().containsKey(epicId)) {
+            storage.getSubtasks().remove(id);
+            if (storage.getEpics().get(epicId).getSubtasksList().contains(id)) {
+                storage.getEpics().get(epicId).getSubtasksList().remove(id);
+                updateEpicStatus(epicId);
+            }
+        }
     }
 
-    public void setEpicStatus() {                                      //расчет статуса для эпика
+    private void updateEpicStatus(int epicId) {                                      //расчет статуса для эпика
+           ArrayList<String> statuss = new ArrayList<>();
 
-        for (Integer i : storage.getEpics().keySet()) {
-            ArrayList<String> statuss = new ArrayList<>();
-
-            for (Integer s : storage.getEpics().get(i).getSubtasksList()) {
+            for (Integer s : storage.getEpics().get(epicId).getSubtasksList()) {
                 statuss.add(storage.getSubtasks().get(s).getStatus());
             }
-            if ((storage.getEpics().get(i).getSubtasksList() == null) || (!statuss.contains("DONE") && !statuss.contains("IN_PROGRESS"))) {
-                storage.getEpics().get(i).setStatus("NEW");
+            if ((storage.getEpics().get(epicId).getSubtasksList() == null) || (!statuss.contains("DONE") && !statuss.contains("IN_PROGRESS"))) {
+                storage.getEpics().get(epicId).setStatus("NEW");
             } else if (!statuss.contains("NEW") && !statuss.contains("IN_PROGRESS")) {
-                storage.getEpics().get(i).setStatus("DONE");
+                storage.getEpics().get(epicId).setStatus("DONE");
             } else
-                storage.getEpics().get(i).setStatus("IN_PROGRESS");
-        }
+                storage.getEpics().get(epicId).setStatus("IN_PROGRESS");
     }
 }

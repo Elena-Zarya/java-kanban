@@ -4,6 +4,7 @@ public class Task {
     private String nameTask;
     private String description;
     private String status;
+    private Integer id;
 
     public Task(String nameTask, String description, String status) {
         this.nameTask = nameTask;
@@ -35,6 +36,14 @@ public class Task {
         this.status = status;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -53,7 +62,8 @@ public class Task {
         return "Task{" +
                 "nameTask='" + nameTask + '\'' +
                 ", description='" + description + '\'' +
-                ", status='" + status +
+                ", status='" + status + '\'' +
+                ", id=" + id +
                 '}';
     }
 }

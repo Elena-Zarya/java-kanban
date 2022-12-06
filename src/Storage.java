@@ -13,7 +13,7 @@ public class Storage {
         return taskId;
     }
 
-    public void setTaskId(Integer taskId) {
+    public void setTaskId(int taskId) {
         this.taskId = taskId;
     }
 
@@ -21,7 +21,7 @@ public class Storage {
         return epicId;
     }
 
-    public void setEpicId(Integer epicId) {
+    public void setEpicId(int epicId) {
         this.epicId = epicId;
     }
 
@@ -29,7 +29,7 @@ public class Storage {
         return subtaskId;
     }
 
-    public void setSubtaskId(Integer subtaskId) {
+    public void setSubtaskId(int subtaskId) {
         this.subtaskId = subtaskId;
     }
 
@@ -37,7 +37,7 @@ public class Storage {
         return tasks;
     }
 
-    public void setTasks(Integer id, Task task) {
+    public void setTasks(int id, Task task) {
         tasks.put(id, task);
     }
 
@@ -45,7 +45,7 @@ public class Storage {
         return epics;
     }
 
-    public void setEpics(Integer id, Epic epic) {
+    public void setEpics(int id, Epic epic) {
         epics.put(id, epic);
     }
 
@@ -53,8 +53,10 @@ public class Storage {
         return subtasks;
     }
 
-    public void setSubtasks(Integer id, Subtask subtask, Integer epicId) {
-        epics.get(epicId).setSubtasksList(id);
-        subtasks.put(id, subtask);
+    public void setSubtasks(int id, Subtask subtask, int epicId) {
+        if (epics.containsKey(epicId)) {
+            epics.get(epicId).addSubtasksId(id);
+            subtasks.put(id, subtask);
+        }
     }
 }

@@ -25,7 +25,7 @@ public class Subtask extends Task {
         return epicId;
     }
 
-    public void setEpicId(Integer epicId) {
+    public void setEpicId(int epicId) {
         this.epicId = epicId;
     }
 
@@ -35,6 +35,7 @@ public class Subtask extends Task {
                 "nameTask='" + getNameTask() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status='" + getStatus() + '\'' +
+                ", id=" + getId() +
                 ", epicId=" + epicId +
                 '}';
     }

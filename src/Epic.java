@@ -29,6 +29,7 @@ public class Epic extends Task {
                 "nameTask='" + getNameTask() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status='" + getStatus() + '\'' +
+                ", id=" + getId() +
                 ", subtasksList.size=" + subtasksList.size() +
                 '}';
     }
@@ -37,8 +38,9 @@ public class Epic extends Task {
         return subtasksList;
     }
 
-    public void setSubtasksList(Integer idSubtask) {
-
-        subtasksList.add(idSubtask);
+    public void addSubtasksId(int idSubtask) {
+        if (!subtasksList.contains(idSubtask)) {
+            subtasksList.add(idSubtask);
+        }
     }
 }
