@@ -21,7 +21,6 @@ public class Manager {
             for (Integer subtaskId: storage.getEpics().get(epicId).getSubtasksList()) {
                 subtasksList.add(storage.getSubtasks().get(subtaskId));
             }
-
             return subtasksList;
         } else {
             return null;
@@ -41,7 +40,7 @@ public class Manager {
         storage.getSubtasks().clear();
         for (Integer i : storage.getEpics().keySet()) {
             storage.getEpics().get(i).getSubtasksList().clear();
-            storage.getEpics().get(i).setStatus("NEW");
+            updateEpicStatus(i);
         }
     }
 
@@ -74,13 +73,17 @@ public class Manager {
     }
 
     public Integer addSubtask(Subtask subtask, int epicId) {
-        int id = storage.getSubtaskId() + 1;
-        storage.setSubtaskId(id);
-        subtask.setId(id);
-        storage.setSubtasks(id, subtask, epicId);
-        subtask.setEpicId(epicId);
-        updateEpicStatus(epicId);
-        return subtask.getId();
+        if (storage.getEpics().containsKey(epicId)) {
+            int id = storage.getSubtaskId() + 1;
+            storage.setSubtaskId(id);
+            subtask.setId(id);
+            storage.setSubtasks(id, subtask, epicId);
+            subtask.setEpicId(epicId);
+            updateEpicStatus(epicId);
+            return subtask.getId();
+        } else {
+            return null;
+        }
     }
 
     public Task updateTask(Task task, int id) {                   //обновление задач
@@ -101,13 +104,17 @@ public class Manager {
     }
 
     public Subtask updateSubtask(Subtask subtask, int id, int epicId) {
-        if (storage.getSubtasks().containsKey(id)) {
-            storage.setSubtasks(id, subtask, epicId);
-            storage.getSubtasks().get(id).setId(id);
-            subtask.setEpicId(epicId);
-            updateEpicStatus(epicId);
+        if (storage.getEpics().containsKey(epicId)) {
+            if (storage.getSubtasks().containsKey(id)) {
+                storage.setSubtasks(id, subtask, epicId);
+                storage.getSubtasks().get(id).setId(id);
+                subtask.setEpicId(epicId);
+                updateEpicStatus(epicId);
+            }
+            return getSubtask(id);
+        }else {
+            return null;
         }
-        return getSubtask(id);
     }
 
     public void deleteTask(int id) {                      //удаление по идентификатору
@@ -121,27 +128,29 @@ public class Manager {
         storage.getEpics().remove(id);
     }
 
-    public void deleteSubtask(Integer id, int epicId) {           //Если заменить Integer id на int id, то remove(id) ужаляет по индексу, а не по значению
+    public void deleteSubtask(int id, int epicId) {
+        Integer idS = Integer.valueOf(id);
         if (storage.getEpics().containsKey(epicId)) {
-            storage.getSubtasks().remove(id);
-            if (storage.getEpics().get(epicId).getSubtasksList().contains(id)) {
-                storage.getEpics().get(epicId).getSubtasksList().remove(id);
+            storage.getSubtasks().remove(idS);
+            if (storage.getEpics().get(epicId).getSubtasksList().contains(idS)) {
+                storage.getEpics().get(epicId).getSubtasksList().remove(idS);
                 updateEpicStatus(epicId);
             }
         }
     }
 
     private void updateEpicStatus(int epicId) {                                      //расчет статуса для эпика
-           ArrayList<String> statuss = new ArrayList<>();
+        ArrayList<String> statuss = new ArrayList<>();
+        Epic epicsId = storage.getEpics().get(epicId);
 
-            for (Integer s : storage.getEpics().get(epicId).getSubtasksList()) {
+            for (Integer s : epicsId.getSubtasksList()) {
                 statuss.add(storage.getSubtasks().get(s).getStatus());
             }
-            if ((storage.getEpics().get(epicId).getSubtasksList() == null) || (!statuss.contains("DONE") && !statuss.contains("IN_PROGRESS"))) {
-                storage.getEpics().get(epicId).setStatus("NEW");
+            if ((epicsId.getSubtasksList() == null) || (!statuss.contains("DONE") && !statuss.contains("IN_PROGRESS"))) {
+                epicsId.setStatus("NEW");
             } else if (!statuss.contains("NEW") && !statuss.contains("IN_PROGRESS")) {
-                storage.getEpics().get(epicId).setStatus("DONE");
+                epicsId.setStatus("DONE");
             } else
-                storage.getEpics().get(epicId).setStatus("IN_PROGRESS");
+                epicsId.setStatus("IN_PROGRESS");
     }
 }
