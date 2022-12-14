@@ -3,7 +3,7 @@ import java.util.Objects;
 public class Subtask extends Task {
     private Integer epicId;
 
-    public Subtask(String nameTask, String description, String status) {
+    public Subtask(String nameTask, String description, Status status) {
         super(nameTask, description, status);
     }
 

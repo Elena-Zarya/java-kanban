@@ -1,51 +1,66 @@
 public class Main {
     public static void main(String[] args) {
-        Manager manager = new Manager();
+        TaskManager inMemoryTaskManager = Managers.getDefault();
 
-        Task task = new Task("Сходить в магазин", "купить продукты", "NEW");
-        Task task2 = new Task("Сходить в аптеку", "купить лекарства", "NEW");
-        Task task3 = new Task("Сходить в аптеку", "купить лекарства", "IN_PROGRESS");
-        Task task4 = new Task("Сходить в магазин", "купить продукты", "DONE");
+        Task task = new Task("Сходить в магазин", "купить продукты", Status.NEW);
+        Task task2 = new Task("Сходить в аптеку", "купить лекарства", Status.NEW);
+        Task task3 = new Task("Сходить в аптеку", "купить лекарства", Status.IN_PROGRESS);
+        Task task4 = new Task("Сходить в магазин", "купить продукты", Status.DONE);
 
-        Epic epic = new Epic("Уборка", "Уборка в квартире ", "NEW");
-        Epic epic2 = new Epic("Тренажерный зал", "Сходить на тренировку", "NEW");
+        Epic epic = new Epic("Уборка", "Уборка в квартире ", Status.NEW);
+        Epic epic2 = new Epic("Тренажерный зал", "Сходить на тренировку", Status.NEW);
 
-        Subtask subtask = new Subtask("Помыть окна", "В комнате и в кухне", "IN_PROGRESS");
-        Subtask subtask2 = new Subtask("Помыть окна", "В комнате и в кухне", "DONE");
+        Subtask subtask = new Subtask("Помыть окна", "В комнате и в кухне", Status.IN_PROGRESS);
+        Subtask subtask2 = new Subtask("Помыть окна", "В комнате и в кухне", Status.DONE);
 
-        Subtask subtask21 = new Subtask("Беговая дорожка", "30 минут ", "NEW");
-        Subtask subtask22 = new Subtask("Силовые тренажеры", "30 минут", "NEW");
-        Subtask subtask23 = new Subtask("Беговая дорожка", "30 минут ", "IN_PROGRESS");
-        Subtask subtask24 = new Subtask("Силовые тренажеры", "30 минут", "DONE");
+        Subtask subtask21 = new Subtask("Беговая дорожка", "30 минут ", Status.NEW);
+        Subtask subtask22 = new Subtask("Силовые тренажеры", "30 минут", Status.NEW);
+        Subtask subtask23 = new Subtask("Беговая дорожка", "30 минут ", Status.IN_PROGRESS);
+        Subtask subtask24 = new Subtask("Силовые тренажеры", "30 минут", Status.DONE);
 
-        System.out.println("Task test:");
-        System.out.println("Добавлена задача: " + manager.addTask(task));
-        System.out.println("Добавлена задача: " + manager.addTask(task2));
-        System.out.println("Список задач: " + manager.getAllTask());
-        System.out.println("Обновлена задача: " + manager.updateTask(task3, 2));
-        System.out.println("Обновлена задача: " + manager.updateTask(task4, 1));
-        System.out.println("Обновленный список задач: " + manager.getAllTask());
-        manager.deleteTask(2);
-        System.out.println("Задача удалена, обновленный список задач: " + manager.getAllTask());
+        System.out.println("\nTask test:");
+        System.out.println("Добавлена задача: " + inMemoryTaskManager.addTask(task));
+        System.out.println("Добавлена задача: " + inMemoryTaskManager.addTask(task2));
+        System.out.println("Список задач: " + inMemoryTaskManager.getAllTask());
+        System.out.println("Обновлена задача: " + inMemoryTaskManager.updateTask(task3, 2));
+        System.out.println("Обновлена задача: " + inMemoryTaskManager.updateTask(task4, 1));
+        System.out.println("Обновленный список задач: " + inMemoryTaskManager.getAllTask());
+        inMemoryTaskManager.deleteTask(2);
+        System.out.println("Задача удалена, обновленный список задач: " + inMemoryTaskManager.getAllTask());
 
-        System.out.println("Epic & subtask test:");
-        System.out.println("Добавлен эпик: " + manager.addEpic(epic));
-        System.out.println("Добавлен эпик: " + manager.addEpic(epic2));
-        System.out.println("Список эпиков: " + manager.getAllEpic());
-        System.out.println("Добавлена подзадача: " + manager.addSubtask(subtask, 1));
-        System.out.println("Добавлена подзадача: " + manager.addSubtask(subtask21, 2));
-        System.out.println("Добавлена подзадача: " + manager.addSubtask(subtask22, 2));
-        System.out.println("Список всех подзадач: " + manager.getAllSubtask());
-        System.out.println("Обновление подзадачи: " + manager.updateSubtask(subtask2, 1, 1));
-        System.out.println("Обновление подзадачи: " + manager.updateSubtask(subtask23, 2, 2));
-        System.out.println("Обновление подзадачи: " + manager.updateSubtask(subtask24, 3, 2));
-        System.out.println("Список эпиков: " + manager.getAllEpic());
-        System.out.println("Список всех подзадач: " + manager.getAllSubtask());
-        manager.deleteEpic(1);
-        System.out.println("Эпик удален, обновленный список эпиков: " + manager.getAllEpic());
-        System.out.println("Список всех подзадач: " + manager.getAllSubtask());
-        manager.deleteSubtask(3, 2);
-        System.out.println("Список всех подзадач эпика: " + manager.getAllSubtask(2));
+        System.out.println("\nEpic & subtask test:");
+        System.out.println("Добавлен эпик: " + inMemoryTaskManager.addEpic(epic));
+        System.out.println("Добавлен эпик: " + inMemoryTaskManager.addEpic(epic2));
+        System.out.println("Список эпиков: " + inMemoryTaskManager.getAllEpic());
+        System.out.println("Добавлена подзадача: " + inMemoryTaskManager.addSubtask(subtask, 1));
+        System.out.println("Добавлена подзадача: " + inMemoryTaskManager.addSubtask(subtask21, 2));
+        System.out.println("Добавлена подзадача: " + inMemoryTaskManager.addSubtask(subtask22, 2));
+        System.out.println("Список всех подзадач: " + inMemoryTaskManager.getAllSubtask());
+        System.out.println("Обновление подзадачи: " + inMemoryTaskManager.updateSubtask(subtask2, 1, 1));
+        System.out.println("Обновление подзадачи: " + inMemoryTaskManager.updateSubtask(subtask23, 2, 2));
+        System.out.println("Обновление подзадачи: " + inMemoryTaskManager.updateSubtask(subtask24, 3, 2));
+        System.out.println("Список эпиков: " + inMemoryTaskManager.getAllEpic());
+        System.out.println("Список всех подзадач: " + inMemoryTaskManager.getAllSubtask());
+        inMemoryTaskManager.deleteEpic(1);
+        System.out.println("Эпик удален, обновленный список эпиков: " + inMemoryTaskManager.getAllEpic());
+        System.out.println("Список всех подзадач: " + inMemoryTaskManager.getAllSubtask());
+        inMemoryTaskManager.deleteSubtask(3, 2);
+        System.out.println("Список всех подзадач эпика: " + inMemoryTaskManager.getAllSubtask(2));
 
+        inMemoryTaskManager.getTask(1);
+        inMemoryTaskManager.getEpic(2);
+        inMemoryTaskManager.getEpic(2);
+        System.out.println("\nИстория просмотров: " + inMemoryTaskManager.getHistory());
+        inMemoryTaskManager.getTask(1);
+        inMemoryTaskManager.getTask(1);
+        inMemoryTaskManager.getEpic(2);
+        inMemoryTaskManager.getSubtask(2);
+        inMemoryTaskManager.getSubtask(2);
+        System.out.println("История просмотров: " + inMemoryTaskManager.getHistory());
+        inMemoryTaskManager.getEpic(2);
+        inMemoryTaskManager.getSubtask(2);
+        inMemoryTaskManager.getSubtask(2);
+        inMemoryTaskManager.getSubtask(2);
+        System.out.println("История просмотров: " + inMemoryTaskManager.getHistory());
     }
 }
