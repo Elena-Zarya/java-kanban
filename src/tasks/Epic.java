@@ -1,3 +1,7 @@
+package tasks;
+
+import manager.Status;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -25,7 +29,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return "tasks.Epic{" +
                 "nameTask='" + getNameTask() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status='" + getStatus() + '\'' +

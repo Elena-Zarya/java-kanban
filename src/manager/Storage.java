@@ -1,5 +1,7 @@
-import java.util.ArrayList;
+package manager;
+
 import java.util.HashMap;
+import tasks.*;
 
 public class Storage {
     private final HashMap<Integer, Task> tasks = new HashMap<>();

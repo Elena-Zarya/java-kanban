@@ -1,4 +1,8 @@
+package manager;
+
 import java.util.ArrayList;
+import java.util.List;
+import tasks.*;
 
 public interface TaskManager {
 
@@ -42,5 +46,5 @@ public interface TaskManager {
 
     void updateEpicStatus(int epicId);
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 }

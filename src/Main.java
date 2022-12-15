@@ -1,3 +1,10 @@
+import manager.Managers;
+import manager.Status;
+import manager.TaskManager;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
+
 public class Main {
     public static void main(String[] args) {
         TaskManager inMemoryTaskManager = Managers.getDefault();
@@ -18,7 +25,7 @@ public class Main {
         Subtask subtask23 = new Subtask("Беговая дорожка", "30 минут ", Status.IN_PROGRESS);
         Subtask subtask24 = new Subtask("Силовые тренажеры", "30 минут", Status.DONE);
 
-        System.out.println("\nTask test:");
+        System.out.println("\ntasks.Task test:");
         System.out.println("Добавлена задача: " + inMemoryTaskManager.addTask(task));
         System.out.println("Добавлена задача: " + inMemoryTaskManager.addTask(task2));
         System.out.println("Список задач: " + inMemoryTaskManager.getAllTask());
@@ -28,7 +35,7 @@ public class Main {
         inMemoryTaskManager.deleteTask(2);
         System.out.println("Задача удалена, обновленный список задач: " + inMemoryTaskManager.getAllTask());
 
-        System.out.println("\nEpic & subtask test:");
+        System.out.println("\ntasks.Epic & subtask test:");
         System.out.println("Добавлен эпик: " + inMemoryTaskManager.addEpic(epic));
         System.out.println("Добавлен эпик: " + inMemoryTaskManager.addEpic(epic2));
         System.out.println("Список эпиков: " + inMemoryTaskManager.getAllEpic());

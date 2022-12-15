@@ -1,11 +1,18 @@
+package manager;
+
 import java.util.ArrayList;
+import java.util.List;
+import tasks.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private Storage storage = new Storage();
-    HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+    private HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
+    /**
+     * получить списки задач
+     */
     @Override
-    public ArrayList<Task> getAllTask() {                                        //получить списки задач
+    public ArrayList<Task> getAllTask() {
         return new ArrayList<>(storage.getTasks().values());
     }
 
@@ -19,8 +26,11 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(storage.getSubtasks().values());
     }
 
+    /**
+     * Получение списка всех подзадач определённого эпика
+     */
     @Override
-    public ArrayList<Subtask> getAllSubtask(int epicId) {               //Получение списка всех подзадач определённого эпика.
+    public ArrayList<Subtask> getAllSubtask(int epicId) {
         if (storage.getEpics().containsKey(epicId)) {
             ArrayList<Subtask> subtasksList = new ArrayList<>();
             for (Integer subtaskId : storage.getEpics().get(epicId).getSubtasksList()) {
@@ -32,8 +42,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    /**
+     * удаление всех задач
+     */
     @Override
-    public void clearTask() {                            //удаление всех задач
+    public void clearTask() {
         storage.getTasks().clear();
     }
 
@@ -52,29 +65,41 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    /**
+     * получение по идентификатору
+     */
     @Override
-    public Task getTask(int id) {                      //получение по идентификатору
+    public Task getTask(int id) {
         Task task = storage.getTasks().get(id);
-        inMemoryHistoryManager.add(task);
+        if (storage.getTasks().containsKey(id)) {
+            inMemoryHistoryManager.add(task);
+        }
         return task;
     }
 
     @Override
     public Epic getEpic(int id) {
         Epic epic = storage.getEpics().get(id);
-        inMemoryHistoryManager.add(epic);
+        if (storage.getEpics().containsKey(id)) {
+            inMemoryHistoryManager.add(epic);
+        }
         return epic;
     }
 
     @Override
     public Subtask getSubtask(int id) {
         Subtask subtask = storage.getSubtasks().get(id);
-        inMemoryHistoryManager.add(subtask);
+        if (storage.getSubtasks().containsKey(id)) {
+            inMemoryHistoryManager.add(subtask);
+        }
         return subtask;
     }
 
+    /**
+     * добавление задач
+     */
     @Override
-    public Integer addTask(Task task) {                           //добавление задач
+    public Integer addTask(Task task) {
         int id = storage.getTaskId() + 1;
         storage.setTaskId(id);
         task.setId(id);
@@ -106,8 +131,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    /**
+     * обновление задач
+     */
     @Override
-    public Task updateTask(Task task, int id) {                   //обновление задач
+    public Task updateTask(Task task, int id) {
         if (storage.getTasks().containsKey(id)) {
             storage.setTasks(id, task);
             storage.getTasks().get(id).setId(id);
@@ -140,8 +168,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    /**
+     * удаление по идентификатору
+     */
     @Override
-    public void deleteTask(int id) {                      //удаление по идентификатору
+    public void deleteTask(int id) {
         storage.getTasks().remove(id);
     }
 
@@ -165,8 +196,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    /**
+     * расчет статуса для эпика
+     */
     @Override
-    public void updateEpicStatus(int epicId) {                                      //расчет статуса для эпика
+    public void updateEpicStatus(int epicId) {
         ArrayList<Status> status = new ArrayList<>();
         Epic epicsId = storage.getEpics().get(epicId);
 
@@ -181,8 +215,11 @@ public class InMemoryTaskManager implements TaskManager {
             epicsId.setStatus(Status.IN_PROGRESS);
     }
 
+    /**
+     * показать историю просмотров
+     */
     @Override
-    public ArrayList<Task> getHistory() {                                 //показать историю просмотров
+    public List<Task> getHistory() {
         return inMemoryHistoryManager.getHistory();
     }
 }
