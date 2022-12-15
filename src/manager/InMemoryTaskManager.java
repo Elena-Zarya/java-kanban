@@ -5,8 +5,8 @@ import java.util.List;
 import tasks.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private Storage storage = new Storage();
-    private HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+    private final Storage storage = new Storage();
+    private final HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     /**
      * получить списки задач
@@ -207,9 +207,9 @@ public class InMemoryTaskManager implements TaskManager {
         for (Integer s : epicsId.getSubtasksList()) {
             status.add(storage.getSubtasks().get(s).getStatus());
         }
-        if ((epicsId.getSubtasksList() == null) || (!status.contains("DONE") && !status.contains("IN_PROGRESS"))) {
+        if ((epicsId.getSubtasksList() == null) || (!status.contains(Status.DONE) && !status.contains(Status.IN_PROGRESS))) {
             epicsId.setStatus(Status.NEW);
-        } else if (!status.contains("NEW") && !status.contains("IN_PROGRESS")) {
+        } else if (!status.contains(Status.NEW) && !status.contains(Status.IN_PROGRESS)) {
             epicsId.setStatus(Status.DONE);
         } else
             epicsId.setStatus(Status.IN_PROGRESS);
