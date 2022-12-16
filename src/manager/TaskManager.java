@@ -1,18 +1,17 @@
 package manager;
 
-import java.util.ArrayList;
 import java.util.List;
 import tasks.*;
 
 public interface TaskManager {
 
-    ArrayList<Task> getAllTask();
+    List<Task> getAllTask();
 
-    ArrayList<Epic> getAllEpic();
+    List<Epic> getAllEpic();
 
-    ArrayList<Subtask> getAllSubtask();
+    List<Subtask> getAllSubtask();
 
-    ArrayList<Subtask> getAllSubtask(int epicId);
+    List<Subtask> getAllSubtask(int epicId);
 
     void clearTask();
 
