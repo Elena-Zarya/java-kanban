@@ -2,6 +2,7 @@ package manager;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import tasks.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -47,17 +48,26 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void clearTask() {
+        for (Integer id : storage.getTasks().keySet()) {
+            historyManager.remove(id);
+        }
         storage.getTasks().clear();
     }
 
     @Override
     public void clearEpics() {
+        for (Integer id : storage.getEpics().keySet()) {
+            historyManager.remove(id);
+        }
         storage.getEpics().clear();
         clearSubtasks();
     }
 
     @Override
     public void clearSubtasks() {
+        for (Integer id : storage.getSubtasks().keySet()) {
+            historyManager.remove(id);
+        }
         storage.getSubtasks().clear();
         for (Integer i : storage.getEpics().keySet()) {
             storage.getEpics().get(i).getSubtasksList().clear();
@@ -70,29 +80,38 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public Task getTask(int id) {
-        Task task = storage.getTasks().get(id);
-        if (task != null) {
-            historyManager.add(task);
+        if (storage.getTasks().containsKey(id)) {
+            Task task = storage.getTasks().get(id);
+            if (task != null) {
+                historyManager.add(task);
+            }
+            return task;
         }
-        return task;
+        return null;
     }
 
     @Override
     public Epic getEpic(int id) {
-        Epic epic = storage.getEpics().get(id);
-        if (epic != null) {
-            historyManager.add(epic);
+        if (storage.getEpics().containsKey(id)) {
+            Epic epic = storage.getEpics().get(id);
+            if (epic != null) {
+                historyManager.add(epic);
+            }
+            return epic;
         }
-        return epic;
+        return null;
     }
 
     @Override
     public Subtask getSubtask(int id) {
-        Subtask subtask = storage.getSubtasks().get(id);
-        if (subtask != null) {
-            historyManager.add(subtask);
+        if (storage.getSubtasks().containsKey(id)) {
+            Subtask subtask = storage.getSubtasks().get(id);
+            if (subtask != null) {
+                historyManager.add(subtask);
+            }
+            return subtask;
         }
-        return subtask;
+        return null;
     }
 
     /**
@@ -100,8 +119,8 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public Integer addTask(Task task) {
-        int id = storage.getTaskId() + 1;
-        storage.setTaskId(id);
+        int id = storage.getId() + 1;
+        storage.setId(id);
         task.setId(id);
         storage.setTasks(id, task);
         return task.getId();
@@ -109,8 +128,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Integer addEpic(Epic epic) {
-        int id = storage.getEpicId() + 1;
-        storage.setEpicId(id);
+        int id = storage.getId() + 1;
+        storage.setId(id);
         epic.setId(id);
         storage.setEpics(id, epic);
         return epic.getId();
@@ -119,8 +138,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Integer addSubtask(Subtask subtask, int epicId) {
         if (storage.getEpics().containsKey(epicId)) {
-            int id = storage.getSubtaskId() + 1;
-            storage.setSubtaskId(id);
+            int id = storage.getId() + 1;
+            storage.setId(id);
             subtask.setId(id);
             storage.setSubtasks(id, subtask, epicId);
             subtask.setEpicId(epicId);
@@ -141,7 +160,6 @@ public class InMemoryTaskManager implements TaskManager {
             storage.getTasks().get(id).setId(id);
         }
         return storage.getTasks().get(id);
-
     }
 
     @Override
@@ -173,25 +191,35 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void deleteTask(int id) {
-        storage.getTasks().remove(id);
+        if (storage.getTasks().containsKey(id)) {
+            storage.getTasks().remove(id);
+            historyManager.remove(id);
+        }
     }
 
     @Override
     public void deleteEpic(int id) {
-        for (Integer i : storage.getEpics().get(id).getSubtasksList()) {
-            storage.getSubtasks().remove(i);
+        if (storage.getEpics().containsKey(id)) {
+            for (Integer i : storage.getEpics().get(id).getSubtasksList()) {
+                storage.getSubtasks().remove(i);
+                historyManager.remove(i);
+            }
+            storage.getEpics().remove(id);
+            historyManager.remove(id);
         }
-        storage.getEpics().remove(id);
     }
 
     @Override
     public void deleteSubtask(int id, int epicId) {
         Integer idS = Integer.valueOf(id);
         if (storage.getEpics().containsKey(epicId)) {
-            storage.getSubtasks().remove(idS);
-            if (storage.getEpics().get(epicId).getSubtasksList().contains(idS)) {
-                storage.getEpics().get(epicId).getSubtasksList().remove(idS);
-                updateEpicStatus(epicId);
+            if (storage.getSubtasks().containsKey(id)) {
+                storage.getSubtasks().remove(idS);
+                historyManager.remove(idS);
+                if (storage.getEpics().get(epicId).getSubtasksList().contains(idS)) {
+                    storage.getEpics().get(epicId).getSubtasksList().remove(idS);
+                    updateEpicStatus(epicId);
+                }
             }
         }
     }

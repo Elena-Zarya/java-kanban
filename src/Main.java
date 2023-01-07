@@ -32,42 +32,45 @@ public class Main {
         System.out.println("Обновлена задача: " + inMemoryTaskManager.updateTask(task3, 2));
         System.out.println("Обновлена задача: " + inMemoryTaskManager.updateTask(task4, 1));
         System.out.println("Обновленный список задач: " + inMemoryTaskManager.getAllTask());
-        inMemoryTaskManager.deleteTask(2);
-        System.out.println("Задача удалена, обновленный список задач: " + inMemoryTaskManager.getAllTask());
+
 
         System.out.println("\ntasks.Epic & subtask test:");
         System.out.println("Добавлен эпик: " + inMemoryTaskManager.addEpic(epic));
         System.out.println("Добавлен эпик: " + inMemoryTaskManager.addEpic(epic2));
         System.out.println("Список эпиков: " + inMemoryTaskManager.getAllEpic());
-        System.out.println("Добавлена подзадача: " + inMemoryTaskManager.addSubtask(subtask, 1));
-        System.out.println("Добавлена подзадача: " + inMemoryTaskManager.addSubtask(subtask21, 2));
-        System.out.println("Добавлена подзадача: " + inMemoryTaskManager.addSubtask(subtask22, 2));
+        System.out.println("Добавлена подзадача: " + inMemoryTaskManager.addSubtask(subtask, 3));
+        System.out.println("Добавлена подзадача: " + inMemoryTaskManager.addSubtask(subtask21, 4));
+        System.out.println("Добавлена подзадача: " + inMemoryTaskManager.addSubtask(subtask22, 4));
         System.out.println("Список всех подзадач: " + inMemoryTaskManager.getAllSubtask());
-        System.out.println("Обновление подзадачи: " + inMemoryTaskManager.updateSubtask(subtask2, 1, 1));
-        System.out.println("Обновление подзадачи: " + inMemoryTaskManager.updateSubtask(subtask23, 2, 2));
-        System.out.println("Обновление подзадачи: " + inMemoryTaskManager.updateSubtask(subtask24, 3, 2));
+        System.out.println("Обновление подзадачи: " + inMemoryTaskManager.updateSubtask(subtask2, 5, 3));
+        System.out.println("Обновление подзадачи: " + inMemoryTaskManager.updateSubtask(subtask23, 6, 4));
+        System.out.println("Обновление подзадачи: " + inMemoryTaskManager.updateSubtask(subtask24, 7, 4));
         System.out.println("Список эпиков: " + inMemoryTaskManager.getAllEpic());
         System.out.println("Список всех подзадач: " + inMemoryTaskManager.getAllSubtask());
-        inMemoryTaskManager.deleteEpic(1);
-        System.out.println("Эпик удален, обновленный список эпиков: " + inMemoryTaskManager.getAllEpic());
         System.out.println("Список всех подзадач: " + inMemoryTaskManager.getAllSubtask());
-        inMemoryTaskManager.deleteSubtask(3, 2);
-        System.out.println("Список всех подзадач эпика: " + inMemoryTaskManager.getAllSubtask(2));
 
         inMemoryTaskManager.getTask(1);
-        inMemoryTaskManager.getEpic(2);
-        inMemoryTaskManager.getEpic(2);
+        inMemoryTaskManager.getTask(2);
+        inMemoryTaskManager.getEpic(3);
+        inMemoryTaskManager.getEpic(4);
         System.out.println("\nИстория просмотров: " + inMemoryTaskManager.getHistory());
+        inMemoryTaskManager.deleteTask(2);
         inMemoryTaskManager.getTask(1);
         inMemoryTaskManager.getTask(1);
-        inMemoryTaskManager.getEpic(2);
-        inMemoryTaskManager.getSubtask(2);
-        inMemoryTaskManager.getSubtask(2);
+        inMemoryTaskManager.getEpic(4);
+        inMemoryTaskManager.getSubtask(5);
+        inMemoryTaskManager.getSubtask(7);
+        inMemoryTaskManager.getSubtask(6);
         System.out.println("История просмотров: " + inMemoryTaskManager.getHistory());
-        inMemoryTaskManager.getEpic(2);
-        inMemoryTaskManager.getSubtask(2);
-        inMemoryTaskManager.getSubtask(2);
-        inMemoryTaskManager.getSubtask(2);
+        inMemoryTaskManager.deleteSubtask(5, 3);
+        System.out.println("История просмотров: " + inMemoryTaskManager.getHistory());
+        inMemoryTaskManager.deleteEpic(3);
+        inMemoryTaskManager.getEpic(4);
+        inMemoryTaskManager.getSubtask(7);
+        inMemoryTaskManager.getSubtask(6);
+        inMemoryTaskManager.getSubtask(7);
+        System.out.println("История просмотров: " + inMemoryTaskManager.getHistory());
+        inMemoryTaskManager.deleteEpic(4);
         System.out.println("История просмотров: " + inMemoryTaskManager.getHistory());
     }
 }
