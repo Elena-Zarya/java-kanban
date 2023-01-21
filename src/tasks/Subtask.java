@@ -1,6 +1,7 @@
 package tasks;
 
 import manager.Status;
+import manager.Type;
 
 import java.util.Objects;
 
@@ -9,6 +10,11 @@ public class Subtask extends Task {
 
     public Subtask(String nameTask, String description, Status status) {
         super(nameTask, description, status);
+    }
+
+    public Subtask(Integer id, Type type, String nameTask, Status status, String description, Integer epicId) {
+        super( id, type, nameTask, status, description);
+        this.epicId = epicId;
     }
 
     @Override
@@ -36,6 +42,7 @@ public class Subtask extends Task {
     @Override
     public String toString() {
         return "tasks.Subtask{" +
+                "type='" + getType() + '\'' +
                 "nameTask='" + getNameTask() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status='" + getStatus() + '\'' +

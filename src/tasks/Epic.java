@@ -1,15 +1,20 @@
 package tasks;
 
 import manager.Status;
-
+import manager.Type;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subtasksList;
+    private final ArrayList<Integer> subtasksList;
 
     public Epic(String nameTask, String description, Status status) {
         super(nameTask, description, status);
+        subtasksList = new ArrayList<>();
+    }
+
+    public Epic(Integer id, Type type, String nameTask, Status status, String description) {
+        super(id, type, nameTask, status, description);
         subtasksList = new ArrayList<>();
     }
 
@@ -30,7 +35,8 @@ public class Epic extends Task {
     @Override
     public String toString() {
         return "tasks.Epic{" +
-                "nameTask='" + getNameTask() + '\'' +
+                "type='" + getType() + '\'' +
+                ", nameTask='" + getNameTask() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status='" + getStatus() + '\'' +
                 ", id=" + getId() +

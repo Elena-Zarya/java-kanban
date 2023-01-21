@@ -1,0 +1,10 @@
+id, type, name, status, description, epic
+1, TASK, Сходить в магазин, NEW, купить продукты, null
+2, TASK, Сходить в аптеку, NEW, купить лекарства, null
+3, EPIC, Уборка, IN_PROGRESS, Уборка в квартире , null
+4, EPIC, Тренажерный зал, NEW, Сходить на тренировку, null
+5, SUBTASK, Помыть окна, IN_PROGRESS, В комнате и в кухне, 3
+6, SUBTASK, Беговая дорожка, NEW, 30 минут , 4
+7, SUBTASK, Силовые тренажеры, NEW, 30 минут, 4
+
+2, 3, 1, 5, 4, 6, 7, 

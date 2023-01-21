@@ -3,12 +3,11 @@ package manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import tasks.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private final CustomLinkedList<Task> history = new CustomLinkedList<>();
+    private final CustomLinkedList history = new CustomLinkedList();
     private final HashMap<Integer, Node> historyMap = new HashMap<>();
 
     @Override
@@ -36,7 +35,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         return history.getTasks(history.size);
     }
 
-    private class CustomLinkedList<Task> {
+    private static class CustomLinkedList {
         private Node first;
         private Node last;
         private int size = 0;
@@ -59,10 +58,10 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         public List<tasks.Task> getTasks(int size) {
             ArrayList<tasks.Task> historyList = new ArrayList<>();
-            Node x = first;
-            for (int i = 0; i < size; i++) {
-                historyList.add(x.getTask());
-                x = x.getNext();
+            Node currentNode = first;
+            while (currentNode != null) {
+                historyList.add(currentNode.getTask());
+                currentNode = currentNode.getNext();
             }
             return historyList;
         }

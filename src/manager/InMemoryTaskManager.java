@@ -2,12 +2,15 @@ package manager;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import tasks.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final Storage storage = new Storage();
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected static final Storage storage = new Storage();
+    private static final HistoryManager historyManager = Managers.getDefaultHistory();
+
+    public static HistoryManager getHistoryManager() {
+        return historyManager;
+    }
 
     /**
      * получить списки задач
@@ -122,6 +125,7 @@ public class InMemoryTaskManager implements TaskManager {
         int id = storage.getId() + 1;
         storage.setId(id);
         task.setId(id);
+        task.setType(Type.TASK);
         storage.setTasks(id, task);
         return task.getId();
     }
@@ -131,6 +135,7 @@ public class InMemoryTaskManager implements TaskManager {
         int id = storage.getId() + 1;
         storage.setId(id);
         epic.setId(id);
+        epic.setType(Type.EPIC);
         storage.setEpics(id, epic);
         return epic.getId();
     }
@@ -141,6 +146,7 @@ public class InMemoryTaskManager implements TaskManager {
             int id = storage.getId() + 1;
             storage.setId(id);
             subtask.setId(id);
+            subtask.setType(Type.SUBTASK);
             storage.setSubtasks(id, subtask, epicId);
             subtask.setEpicId(epicId);
             updateEpicStatus(epicId);

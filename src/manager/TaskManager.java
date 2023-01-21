@@ -1,7 +1,6 @@
 package manager;
 
 import java.util.List;
-
 import tasks.*;
 
 public interface TaskManager {
