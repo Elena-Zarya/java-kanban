@@ -5,10 +5,10 @@ import java.util.List;
 import tasks.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected static final Storage storage = new Storage();
-    private static final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final Storage storage = new Storage();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
-    public static HistoryManager getHistoryManager() {
+    public HistoryManager getHistoryManager() {
         return historyManager;
     }
 
