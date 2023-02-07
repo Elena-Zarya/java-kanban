@@ -1,19 +1,25 @@
 package tasks;
 
-import manager.Status;
-import manager.Type;
-
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Objects;
 
 public class Subtask extends Task {
     private Integer epicId;
 
+    public Subtask(String nameTask, String description, Status status, int duration, int year, Month month, int
+            dayOfMonth, int hour, int minute, Integer epicId) {
+        super(nameTask, description, status, duration, year, month, dayOfMonth, hour, minute);
+        this.epicId = epicId;
+    }
+
     public Subtask(String nameTask, String description, Status status) {
         super(nameTask, description, status);
     }
 
-    public Subtask(Integer id, Type type, String nameTask, Status status, String description, Integer epicId) {
-        super( id, type, nameTask, status, description);
+    public Subtask(Integer id, Type type, String nameTask, Status status, String description, Integer epicId,
+                   LocalDateTime startTime, int duration) {
+        super(id, type, nameTask, status, description, startTime, duration);
         this.epicId = epicId;
     }
 
@@ -43,10 +49,12 @@ public class Subtask extends Task {
     public String toString() {
         return "tasks.Subtask{" +
                 "type='" + getType() + '\'' +
-                "nameTask='" + getNameTask() + '\'' +
+                ", id=" + getId() + '\'' +
+                ", nameTask='" + getNameTask() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status='" + getStatus() + '\'' +
-                ", id=" + getId() +
+                ", startTime=" + getStartTime() + '\'' +
+                ", duration=" + getDuration() + '\'' +
                 ", epicId=" + epicId +
                 '}';
     }

@@ -2,6 +2,8 @@ package manager;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import history.HistoryManager;
 import tasks.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -53,6 +55,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void clearTask() {
         for (Integer id : storage.getTasks().keySet()) {
             historyManager.remove(id);
+            storage.getPrioritizedTasks().remove(storage.getTasks().get(id));
         }
         storage.getTasks().clear();
     }
@@ -70,6 +73,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void clearSubtasks() {
         for (Integer id : storage.getSubtasks().keySet()) {
             historyManager.remove(id);
+            storage.getPrioritizedTasks().remove(storage.getSubtasks().get(id));
         }
         storage.getSubtasks().clear();
         for (Integer i : storage.getEpics().keySet()) {
@@ -122,11 +126,20 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public Integer addTask(Task task) {
+        for (Task t : storage.getPrioritizedTasks()) {
+            if (t.getStartTime() == null || task.getStartTime() == null) {
+                continue;
+            } else if (((task.getStartTime().isAfter(t.getStartTime())) && (task.getStartTime().isBefore(t.getEndTime())))
+                    || ((task.getEndTime().isBefore(t.getEndTime())) && (task.getEndTime().isAfter(t.getStartTime())))) {
+                return null;
+            }
+        }
         int id = storage.getId() + 1;
         storage.setId(id);
         task.setId(id);
         task.setType(Type.TASK);
         storage.setTasks(id, task);
+        storage.getPrioritizedTasks().add(task);
         return task.getId();
     }
 
@@ -143,6 +156,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Integer addSubtask(Subtask subtask, int epicId) {
         if (storage.getEpics().containsKey(epicId)) {
+            for (Task t : storage.getPrioritizedTasks()) {
+                if (t.getStartTime() == null || subtask.getStartTime() == null) {
+                    continue;
+                } else if (((subtask.getStartTime().isAfter(t.getStartTime())) && (subtask.getStartTime().isBefore(t.getEndTime())))
+                        || ((subtask.getEndTime().isBefore(t.getEndTime())) && (subtask.getEndTime().isAfter(t.getStartTime())))) {
+                    return null;
+                }
+            }
             int id = storage.getId() + 1;
             storage.setId(id);
             subtask.setId(id);
@@ -150,6 +171,7 @@ public class InMemoryTaskManager implements TaskManager {
             storage.setSubtasks(id, subtask, epicId);
             subtask.setEpicId(epicId);
             updateEpicStatus(epicId);
+            storage.getPrioritizedTasks().add(subtask);
             return subtask.getId();
         } else {
             return null;
@@ -162,10 +184,24 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task updateTask(Task task, int id) {
         if (storage.getTasks().containsKey(id)) {
+            if (storage.getPrioritizedTasks().contains(storage.getTasks().get(id))) {
+                storage.getPrioritizedTasks().remove(storage.getTasks().get(id));
+            }
+            for (Task t : storage.getPrioritizedTasks()) {
+                if (t.getStartTime() == null || task.getStartTime() == null) {
+                    continue;
+                } else if (((task.getStartTime().isAfter(t.getStartTime())) && (task.getStartTime().isBefore(t.getEndTime())))
+                        || ((task.getEndTime().isBefore(t.getEndTime())) && (task.getEndTime().isAfter(t.getStartTime())))) {
+                    return null;
+                }
+            }
             storage.setTasks(id, task);
             storage.getTasks().get(id).setId(id);
+            task.setType(Type.TASK);
+            storage.getPrioritizedTasks().add(task);
+            return storage.getTasks().get(id);
         }
-        return storage.getTasks().get(id);
+        return null;
     }
 
     @Override
@@ -173,20 +209,36 @@ public class InMemoryTaskManager implements TaskManager {
         if (storage.getEpics().containsKey(id)) {
             storage.getEpics().get(id).setNameTask(nameTask);
             storage.getEpics().get(id).setDescription(description);
+            storage.getEpics().get(id).setType(Type.EPIC);
+            return storage.getEpics().get(id);
         }
-        return storage.getEpics().get(id);
+        return null;
     }
 
     @Override
     public Subtask updateSubtask(Subtask subtask, int id, int epicId) {
         if (storage.getEpics().containsKey(epicId)) {
             if (storage.getSubtasks().containsKey(id)) {
+                if (storage.getPrioritizedTasks().contains(storage.getSubtasks().get(id))) {
+                    storage.getPrioritizedTasks().remove(storage.getSubtasks().get(id));
+                }
+                for (Task t : storage.getPrioritizedTasks()) {
+                    if (t.getStartTime() == null || subtask.getStartTime() == null) {
+                        continue;
+                    } else if (((subtask.getStartTime().isAfter(t.getStartTime())) && (subtask.getStartTime().isBefore(t.getEndTime())))
+                            || ((subtask.getEndTime().isBefore(t.getEndTime())) && (subtask.getEndTime().isAfter(t.getStartTime())))) {
+                        return null;
+                    }
+                }
                 storage.setSubtasks(id, subtask, epicId);
                 storage.getSubtasks().get(id).setId(id);
+                subtask.setType(Type.SUBTASK);
                 subtask.setEpicId(epicId);
                 updateEpicStatus(epicId);
+                storage.getPrioritizedTasks().add(subtask);
+                return storage.getSubtasks().get(id);
             }
-            return storage.getSubtasks().get(id);
+            return null;
         } else {
             return null;
         }
@@ -198,6 +250,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTask(int id) {
         if (storage.getTasks().containsKey(id)) {
+            if (storage.getPrioritizedTasks().contains(storage.getTasks().get(id))) {
+                storage.getPrioritizedTasks().remove(storage.getTasks().get(id));
+            }
             storage.getTasks().remove(id);
             historyManager.remove(id);
         }
@@ -220,6 +275,9 @@ public class InMemoryTaskManager implements TaskManager {
         Integer idS = Integer.valueOf(id);
         if (storage.getEpics().containsKey(epicId)) {
             if (storage.getSubtasks().containsKey(id)) {
+                if (storage.getPrioritizedTasks().contains(storage.getSubtasks().get(id))) {
+                    storage.getPrioritizedTasks().remove(storage.getSubtasks().get(id));
+                }
                 storage.getSubtasks().remove(idS);
                 historyManager.remove(idS);
                 if (storage.getEpics().get(epicId).getSubtasksList().contains(idS)) {
@@ -255,6 +313,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    /**
+     * список задач и подзадач в заданном порядке
+     */
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<Task>(storage.getPrioritizedTasks());
     }
 }
 

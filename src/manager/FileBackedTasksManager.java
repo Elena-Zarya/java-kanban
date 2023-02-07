@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import static manager.CSVTaskFormatter.*;
+
 public class FileBackedTasksManager extends InMemoryTaskManager {
     public static void main(String[] args) {
         File saveFile = new File("fileToSave.csv");
@@ -19,7 +21,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println(manager.getHistory());
     }
 
-    private File file;
+    private final File file;
 
     public FileBackedTasksManager(File file) {
         this.file = file;
@@ -27,21 +29,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public Integer addTask(Task task) {
-        int a = super.addTask(task);
+        Integer a = super.addTask(task);
         save();
         return a;
     }
 
     @Override
     public Integer addEpic(Epic epic) {
-        int a = super.addEpic(epic);
+        Integer a = super.addEpic(epic);
         save();
         return a;
     }
 
     @Override
     public Integer addSubtask(Subtask subtask, int epicId) {
-        int a = super.addSubtask(subtask, epicId);
+        Integer a = super.addSubtask(subtask, epicId);
         save();
         return a;
     }
@@ -131,9 +133,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         save();
     }
 
-    public void save() {
-        CSVTaskFormatter formatter = new CSVTaskFormatter();
+    protected void save() {
         try {
+            CSVTaskFormatter formatter = new CSVTaskFormatter();
             BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file));
             fileWriter.write(formatter.title() + "\n");
 
@@ -158,9 +160,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     /**
      * восстанавление данных менеджера из файла при запуске программы
      */
-    static FileBackedTasksManager loadFromFile(File file) {
+    public static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager fileManager = new FileBackedTasksManager(file);
-        CSVTaskFormatter formatter = new CSVTaskFormatter();
+        Storage storage = fileManager.storage;
 
         try {
             final String csv = Files.readString(file.toPath());
@@ -175,35 +177,35 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
                 if (flag) {
                     if (lines[i].contains("EPIC")) {
-                        Epic epic = formatter.fromStringEpic(lines[i]);
-                        fileManager.storage.setEpics(epic.getId(), epic);
+                        Epic epic = fromStringEpic(lines[i]);
+                        storage.setEpics(epic.getId(), epic);
                         tasksAll.put(epic.getId(), epic);
                     } else if (lines[i].contains("SUBTASK")) {
-                        Subtask subtask = formatter.fromStringSubtask(lines[i]);
-                        fileManager.storage.setSubtasks(subtask.getId(), subtask, subtask.getEpicId());
+                        Subtask subtask = fromStringSubtask(lines[i]);
+                        storage.setSubtasks(subtask.getId(), subtask, subtask.getEpicId());
                         tasksAll.put(subtask.getId(), subtask);
-                    } else {
-                        Task task = formatter.fromStringTask(lines[i]);
-                        fileManager.storage.setTasks(task.getId(), task);
+                    } else if (lines[i].contains("TASK")) {
+                        Task task = fromStringTask(lines[i]);
+                        storage.setTasks(task.getId(), task);
                         tasksAll.put(task.getId(), task);
                     }
                 } else {
-                    List<Integer> listId = formatter.historyFromString(lines[i]);
+                    List<Integer> listId = historyFromString(lines[i]);
                     for (Integer id : listId) {
-                        if (fileManager.storage.getTasks().containsKey(id)) {
-                            Task task = fileManager.storage.getTasks().get(id);
+                        if (storage.getTasks().containsKey(id)) {
+                            Task task = storage.getTasks().get(id);
                             fileManager.getHistoryManager().add(task);
-                        } else if (fileManager.storage.getEpics().containsKey(id)) {
-                            Epic task = fileManager.storage.getEpics().get(id);
+                        } else if (storage.getEpics().containsKey(id)) {
+                            Epic task = storage.getEpics().get(id);
                             fileManager.getHistoryManager().add(task);
-                        } else if ((fileManager.storage.getSubtasks().containsKey(id))) {
-                            Subtask task = fileManager.storage.getSubtasks().get(id);
+                        } else if (storage.getSubtasks().containsKey(id)) {
+                            Subtask task = storage.getSubtasks().get(id);
                             fileManager.getHistoryManager().add(task);
                         }
                     }
                 }
                 int maxId = Collections.max(tasksAll.keySet());
-                fileManager.storage.setId(maxId);
+                storage.setId(maxId);
             }
         } catch (IOException e) {
             throw new ManagerReaderException("Произошла ошибка во время чтения файла");

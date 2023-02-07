@@ -1,7 +1,7 @@
 package tasks;
 
-import manager.Status;
-import manager.Type;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Objects;
 
 public class Task {
@@ -11,6 +11,17 @@ public class Task {
     private Status status;
     private Integer id;
     private Integer epicId;
+    private int duration;
+    private LocalDateTime startTime;
+
+    public Task(String nameTask, String description, Status status, int duration, int year, Month month, int dayOfMonth,
+                int hour, int minute) {
+        this.nameTask = nameTask;
+        this.description = description;
+        this.status = status;
+        this.duration = duration;
+        startTime = LocalDateTime.of(year, month, dayOfMonth, hour, minute);
+    }
 
     public Task(String nameTask, String description, Status status) {
         this.nameTask = nameTask;
@@ -18,12 +29,15 @@ public class Task {
         this.status = status;
     }
 
-    public Task(Integer id, Type type, String nameTask, Status status, String description) {
+    public Task(Integer id, Type type, String nameTask, Status status, String description, LocalDateTime startTime, Integer
+            duration) {
         this.type = type;
         this.nameTask = nameTask;
         this.description = description;
         this.status = status;
         this.id = id;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public String getNameTask() {
@@ -74,28 +88,52 @@ public class Task {
         this.epicId = epicId;
     }
 
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStarTime(LocalDateTime starTime) {
+        this.startTime = starTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equals(nameTask, task.nameTask) && Objects.equals(description, task.description) && Objects.equals(status, task.status);
+        return duration == task.duration && type == task.type && Objects.equals(nameTask, task.nameTask) &&
+                Objects.equals(description, task.description) && status == task.status && Objects.equals(id, task.id)
+                && Objects.equals(epicId, task.epicId) && Objects.equals(startTime, task.startTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nameTask, description, status);
+        return Objects.hash(type, nameTask, description, status, id, epicId, duration, startTime);
     }
 
     @Override
     public String toString() {
         return "tasks.Task{" +
                 "type='" + type + '\'' +
+                ", id=" + id + '\'' +
                 ", nameTask='" + nameTask + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
-                ", id=" + id +
+                ", starTime=" + startTime + '\'' +
+                ", duration=" + duration +
                 '}';
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plusMinutes(duration);
     }
 }
 

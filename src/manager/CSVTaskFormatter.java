@@ -1,44 +1,63 @@
 package manager;
 
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
+import history.HistoryManager;
+import tasks.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CSVTaskFormatter {
 
     public String title() {
-        String title = "id, type, name, status, description, epic";
-        return title;
+        return "id, type, name, status, description, epic, startTime, duration";
     }
 
     /**
      * сохранение задачи в строку
      */
     public String toString(Task task) {
-        String stringTask = task.getId() + ", " + task.getType() + ", " + task.getNameTask() + ", " + task.getStatus() + ", "
-                + task.getDescription() + ", " + task.getEpicId();
-        return stringTask;
+        return task.getId() + ", " + task.getType() + ", " + task.getNameTask() + ", " + task.getStatus() + ", "
+                + task.getDescription() + ", " + task.getEpicId() + ", " + task.getStartTime() + ", "
+                + task.getDuration();
     }
 
     /**
      * создание задачи из строки
      */
-    public Task fromStringTask(String value) {
+    public static Task fromStringTask(String value) {
         String[] splitTo = value.split(", ");
-        return new Task(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2], Status.valueOf(splitTo[3]), splitTo[4]);
+        if (splitTo[6].equals("null")) {
+            return new Task(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2], Status.valueOf(splitTo[3]),
+                    splitTo[4], null, Integer.parseInt(splitTo[7]));
+        } else {
+            return new Task(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2], Status.valueOf(splitTo[3]),
+                    splitTo[4], LocalDateTime.parse(splitTo[6]), Integer.parseInt(splitTo[7]));
+        }
     }
 
-    public Epic fromStringEpic(String value) {
+    public static Epic fromStringEpic(String value) {
         String[] splitTo = value.split(", ");
-        return new Epic(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2], Status.valueOf(splitTo[3]), splitTo[4]);
+        if (splitTo[6].equals("null")) {
+            return new Epic(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2], Status.valueOf(splitTo[3]),
+                    splitTo[4], null, Integer.parseInt(splitTo[7]));
+        } else {
+            return new Epic(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2], Status.valueOf(splitTo[3]),
+                    splitTo[4], LocalDateTime.parse(splitTo[6]), Integer.parseInt(splitTo[7]));
+        }
     }
 
-    public Subtask fromStringSubtask(String value) {
+    public static Subtask fromStringSubtask(String value) {
         String[] splitTo = value.split(", ");
-        return new Subtask(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2], Status.valueOf(splitTo[3]), splitTo[4], Integer.parseInt(splitTo[5]));
+        if (splitTo[6].equals("null")) {
+            return new Subtask(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2],
+                    Status.valueOf(splitTo[3]), splitTo[4], Integer.parseInt(splitTo[5]), null,
+                    Integer.parseInt(splitTo[7]));
+        } else {
+            return new Subtask(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2],
+                    Status.valueOf(splitTo[3]), splitTo[4], Integer.parseInt(splitTo[5]), LocalDateTime.parse(splitTo[6]),
+                    Integer.parseInt(splitTo[7]));
+        }
     }
 
     /**
@@ -46,14 +65,17 @@ public class CSVTaskFormatter {
      */
     static String historyToString(HistoryManager manager) {
         StringBuilder builder = new StringBuilder();
+        List<Task> history = manager.getHistory();
 
-        if (!manager.getHistory().isEmpty()) {
-            for (int i = 0; i < (manager.getHistory().size() - 1); i++) {
-                builder.append(manager.getHistory().get(i).getId() + ", ");
+        if (history.isEmpty()) {
+            return "";
+        } else {
+            for (int i = 0; i < (history.size() - 1); i++) {
+                builder.append(history.get(i).getId() + ", ");
             }
-            builder.append(manager.getHistory().get(manager.getHistory().size() - 1).getId());
+            builder.append(history.get(history.size() - 1).getId());
+            return builder.toString();
         }
-        return builder.toString();
     }
 
     /**

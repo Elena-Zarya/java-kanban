@@ -1,4 +1,4 @@
-package manager;
+package history;
 
 import tasks.*;
 import java.util.List;

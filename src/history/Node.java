@@ -1,6 +1,7 @@
-package manager;
+package history;
 
 import tasks.Task;
+
 import java.util.Objects;
 
 public class Node {

@@ -1,8 +1,9 @@
-package manager;
+package history;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import tasks.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
@@ -32,10 +33,10 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-        return history.getTasks(history.size);
+        return history.getTasks();
     }
 
-    private static class CustomLinkedList {
+    private class CustomLinkedList {
         private Node first;
         private Node last;
         private int size = 0;
@@ -44,7 +45,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         /**
          * Добавление задачи в конец списка
          */
-        public Node linkLast(tasks.Task task) {
+        protected Node linkLast(tasks.Task task) {
             final Node newNode = new Node(last, task, null);
             if (first == null) {
                 first = newNode;
@@ -56,7 +57,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             return newNode;
         }
 
-        public List<tasks.Task> getTasks(int size) {
+        protected List<tasks.Task> getTasks() {
             ArrayList<tasks.Task> historyList = new ArrayList<>();
             Node currentNode = first;
             while (currentNode != null) {
@@ -66,7 +67,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             return historyList;
         }
 
-        private void removeNode(Node node) {
+        protected void removeNode(Node node) {
             Node next = node.getNext();
             Node prev = node.getPrev();
 
