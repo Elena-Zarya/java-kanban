@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.Month.FEBRUARY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static tasks.Status.*;
 
 abstract class TaskManagerTest<T extends TaskManager> {
@@ -348,7 +347,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void getHistoryTest(){
+    public void getHistoryTest() {
         List<Task> historyTasks = manager.getHistory();
         assertEquals(0, historyTasks.size(), "История не пустая");
 
@@ -403,6 +402,42 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         manager.clearSubtasks();
         assertEquals(NEW, savedEpic.getStatus(), "Неверный статус эпика.");
+    }
+
+    @Test
+    public void updateEpicTimeTest() {
+        Epic epic = new Epic("Эпик 1", "Описание", NEW);
+        final int epicId = manager.addEpic(epic);
+
+        Subtask subtask = new Subtask("Подзадача 1", "Описание", NEW, 30, 2023, FEBRUARY, 5, 10, 30, epicId);
+        final int subtaskId = manager.addSubtask(subtask, epicId);
+
+        Subtask subtask2 = new Subtask("Подзадача 2", "Описание 2", NEW, 30, 2023, FEBRUARY, 5, 14, 30, epicId);
+        final int subtask2Id = manager.addSubtask(subtask2, epicId);
+
+        int durationEpic = manager.getEpic(epicId).getDuration();
+        assertEquals(270, durationEpic, "неверная продолжительность эпика");
+
+        Subtask subtask3 = new Subtask("Подзадача 3", "Описание 3", NEW, 30, 2023, FEBRUARY, 5, 11, 30, epicId);
+        final int subtask3Id = manager.addSubtask(subtask3, epicId);
+
+        int duration2Epic = manager.getEpic(epicId).getDuration();
+        assertEquals(270, duration2Epic, "неверная продолжительность эпика");
+
+        Subtask subtask4 = new Subtask("Подзадача 4", "Описание 4", NEW, 30, 2023, FEBRUARY, 5, 12, 30, epicId);
+        manager.updateSubtask(subtask4, subtask2Id, epicId);
+
+        int duration3Epic = manager.getEpic(epicId).getDuration();
+        assertEquals(150, duration3Epic, "неверная продолжительность эпика");
+
+        manager.deleteSubtask(subtask2Id, epicId);
+        int duration4Epic = manager.getEpic(epicId).getDuration();
+        assertEquals(90, duration4Epic, "неверная продолжительность эпика");
+
+        manager.clearSubtasks();
+        Integer duration5Epic = manager.getEpic(epicId).getDuration();
+        assertEquals(null, duration5Epic, "неверная продолжительность эпика");
+
     }
 
     @Test

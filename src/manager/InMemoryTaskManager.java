@@ -1,5 +1,6 @@
 package manager;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +80,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (Integer i : storage.getEpics().keySet()) {
             storage.getEpics().get(i).getSubtasksList().clear();
             updateEpicStatus(i);
+            updateEpicTime(i);
         }
     }
 
@@ -126,13 +128,8 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public Integer addTask(Task task) {
-        for (Task t : storage.getPrioritizedTasks()) {
-            if (t.getStartTime() == null || task.getStartTime() == null) {
-                continue;
-            } else if (((task.getStartTime().isAfter(t.getStartTime())) && (task.getStartTime().isBefore(t.getEndTime())))
-                    || ((task.getEndTime().isBefore(t.getEndTime())) && (task.getEndTime().isAfter(t.getStartTime())))) {
-                return null;
-            }
+        if (!checkTimeIsFree(task)) {
+            return null;
         }
         int id = storage.getId() + 1;
         storage.setId(id);
@@ -156,13 +153,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Integer addSubtask(Subtask subtask, int epicId) {
         if (storage.getEpics().containsKey(epicId)) {
-            for (Task t : storage.getPrioritizedTasks()) {
-                if (t.getStartTime() == null || subtask.getStartTime() == null) {
-                    continue;
-                } else if (((subtask.getStartTime().isAfter(t.getStartTime())) && (subtask.getStartTime().isBefore(t.getEndTime())))
-                        || ((subtask.getEndTime().isBefore(t.getEndTime())) && (subtask.getEndTime().isAfter(t.getStartTime())))) {
-                    return null;
-                }
+            if (!checkTimeIsFree(subtask)) {
+                return null;
             }
             int id = storage.getId() + 1;
             storage.setId(id);
@@ -171,6 +163,7 @@ public class InMemoryTaskManager implements TaskManager {
             storage.setSubtasks(id, subtask, epicId);
             subtask.setEpicId(epicId);
             updateEpicStatus(epicId);
+            updateEpicTime(epicId);
             storage.getPrioritizedTasks().add(subtask);
             return subtask.getId();
         } else {
@@ -187,13 +180,8 @@ public class InMemoryTaskManager implements TaskManager {
             if (storage.getPrioritizedTasks().contains(storage.getTasks().get(id))) {
                 storage.getPrioritizedTasks().remove(storage.getTasks().get(id));
             }
-            for (Task t : storage.getPrioritizedTasks()) {
-                if (t.getStartTime() == null || task.getStartTime() == null) {
-                    continue;
-                } else if (((task.getStartTime().isAfter(t.getStartTime())) && (task.getStartTime().isBefore(t.getEndTime())))
-                        || ((task.getEndTime().isBefore(t.getEndTime())) && (task.getEndTime().isAfter(t.getStartTime())))) {
-                    return null;
-                }
+            if (!checkTimeIsFree(task)) {
+                return null;
             }
             storage.setTasks(id, task);
             storage.getTasks().get(id).setId(id);
@@ -222,19 +210,15 @@ public class InMemoryTaskManager implements TaskManager {
                 if (storage.getPrioritizedTasks().contains(storage.getSubtasks().get(id))) {
                     storage.getPrioritizedTasks().remove(storage.getSubtasks().get(id));
                 }
-                for (Task t : storage.getPrioritizedTasks()) {
-                    if (t.getStartTime() == null || subtask.getStartTime() == null) {
-                        continue;
-                    } else if (((subtask.getStartTime().isAfter(t.getStartTime())) && (subtask.getStartTime().isBefore(t.getEndTime())))
-                            || ((subtask.getEndTime().isBefore(t.getEndTime())) && (subtask.getEndTime().isAfter(t.getStartTime())))) {
-                        return null;
-                    }
+                if (!checkTimeIsFree(subtask)) {
+                    return null;
                 }
                 storage.setSubtasks(id, subtask, epicId);
                 storage.getSubtasks().get(id).setId(id);
                 subtask.setType(Type.SUBTASK);
                 subtask.setEpicId(epicId);
                 updateEpicStatus(epicId);
+                updateEpicTime(epicId);
                 storage.getPrioritizedTasks().add(subtask);
                 return storage.getSubtasks().get(id);
             }
@@ -283,6 +267,7 @@ public class InMemoryTaskManager implements TaskManager {
                 if (storage.getEpics().get(epicId).getSubtasksList().contains(idS)) {
                     storage.getEpics().get(epicId).getSubtasksList().remove(idS);
                     updateEpicStatus(epicId);
+                    updateEpicTime(epicId);
                 }
             }
         }
@@ -315,11 +300,43 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+
+    /**
+     * обновление duration, startTime и endTime эпика
+     */
+    @Override
+    public void updateEpicTime(int epicId) {
+        Epic epic = storage.getEpics().get(epicId);
+        epic.zeroingTime();
+        for (Integer i : epic.getSubtasksList()) {
+            Subtask subtask = storage.getSubtasks().get(i);
+            if (subtask.getStartTime() != null) {
+                LocalDateTime startTimeSubtask = subtask.getStartTime();
+                LocalDateTime endTimeSubtask = subtask.getEndTime();
+                epic.setStartTime(startTimeSubtask);
+                epic.setEndTime(endTimeSubtask);
+                epic.setDuration();
+            }
+        }
+    }
+
     /**
      * список задач и подзадач в заданном порядке
      */
     public List<Task> getPrioritizedTasks() {
         return new ArrayList<Task>(storage.getPrioritizedTasks());
+    }
+
+    protected Boolean checkTimeIsFree(Task task) {
+        for (Task t : storage.getPrioritizedTasks()) {
+            if (t.getStartTime() == null || task.getStartTime() == null) {
+                continue;
+            } else if ((task.getStartTime().isAfter(t.getStartTime()) && task.getStartTime().isBefore(t.getEndTime()))
+                    || (task.getEndTime().isBefore(t.getEndTime()) && task.getEndTime().isAfter(t.getStartTime()))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 

@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class Epic extends Task {
     private final ArrayList<Integer> subtasksList;
-    private int duration;
+    private Integer duration;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
@@ -23,14 +23,8 @@ public class Epic extends Task {
     }
 
     @Override
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
-    }
-
-    @Override
-    public void setDuration(int duration) {
-        Duration durat = Duration.between(startTime, endTime);
-        this.duration = (int) durat.toMinutes();
     }
 
     @Override
@@ -39,9 +33,22 @@ public class Epic extends Task {
     }
 
     @Override
-    public void setStarTime(LocalDateTime starTime) {
-        if (starTime.isBefore(this.startTime)) {
-            this.startTime = starTime;
+    public void setStartTime(LocalDateTime startTime) {
+        if (this.startTime != null) {
+            if (startTime.isBefore(this.startTime)) {
+                this.startTime = startTime;
+            }
+        } else {
+            this.startTime = startTime;
+        }
+    }
+
+    public void setDuration() {
+        if (startTime == null && endTime == null) {
+            this.duration = null;
+        } else {
+            Duration durat = Duration.between(startTime, endTime);
+            this.duration = (int) durat.toMinutes();
         }
     }
 
@@ -50,7 +57,11 @@ public class Epic extends Task {
     }
 
     public void setEndTime(LocalDateTime endTime) {
-        if (endTime.isAfter(this.endTime)) {
+        if (this.endTime != null) {
+            if (endTime.isAfter(this.endTime)) {
+                this.endTime = endTime;
+            }
+        } else {
             this.endTime = endTime;
         }
     }
@@ -92,5 +103,11 @@ public class Epic extends Task {
         if (!subtasksList.contains(idSubtask)) {
             subtasksList.add(idSubtask);
         }
+    }
+
+    public void zeroingTime() {
+        duration = null;
+        startTime = null;
+        endTime = null;
     }
 }

@@ -11,7 +11,7 @@ public class Task {
     private Status status;
     private Integer id;
     private Integer epicId;
-    private int duration;
+    private Integer duration;
     private LocalDateTime startTime;
 
     public Task(String nameTask, String description, Status status, int duration, int year, Month month, int dayOfMonth,
@@ -88,7 +88,7 @@ public class Task {
         this.epicId = epicId;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
@@ -100,8 +100,8 @@ public class Task {
         return startTime;
     }
 
-    public void setStarTime(LocalDateTime starTime) {
-        this.startTime = starTime;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     @Override
