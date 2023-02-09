@@ -16,10 +16,15 @@ public class Epic extends Task {
         subtasksList = new ArrayList<>();
     }
 
-    public Epic(Integer id, Type type, String nameTask, Status status, String description, LocalDateTime startTime, int
+    public Epic(Integer id, String nameTask, Status status, String description, LocalDateTime startTime, Integer
             duration) {
-        super(id, type, nameTask, status, description, startTime, duration);
+        super(id, nameTask, status, description, startTime, duration);
         subtasksList = new ArrayList<>();
+    }
+
+    @Override
+    public Type getType() {
+        return Type.EPIC;
     }
 
     @Override
@@ -34,22 +39,11 @@ public class Epic extends Task {
 
     @Override
     public void setStartTime(LocalDateTime startTime) {
-        if (this.startTime != null) {
-            if (startTime.isBefore(this.startTime)) {
-                this.startTime = startTime;
-            }
-        } else {
-            this.startTime = startTime;
-        }
+        this.startTime = startTime;
     }
 
-    public void setDuration() {
-        if (startTime == null && endTime == null) {
-            this.duration = null;
-        } else {
-            Duration durat = Duration.between(startTime, endTime);
-            this.duration = (int) durat.toMinutes();
-        }
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public LocalDateTime getEndTime() {
@@ -57,13 +51,7 @@ public class Epic extends Task {
     }
 
     public void setEndTime(LocalDateTime endTime) {
-        if (this.endTime != null) {
-            if (endTime.isAfter(this.endTime)) {
-                this.endTime = endTime;
-            }
-        } else {
-            this.endTime = endTime;
-        }
+        this.endTime = endTime;
     }
 
     @Override

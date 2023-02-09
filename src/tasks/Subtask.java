@@ -17,9 +17,9 @@ public class Subtask extends Task {
         super(nameTask, description, status);
     }
 
-    public Subtask(Integer id, Type type, String nameTask, Status status, String description, Integer epicId,
-                   LocalDateTime startTime, int duration) {
-        super(id, type, nameTask, status, description, startTime, duration);
+    public Subtask(Integer id, String nameTask, Status status, String description, Integer epicId,
+                   LocalDateTime startTime, Integer duration) {
+        super(id, nameTask, status, description, startTime, duration);
         this.epicId = epicId;
     }
 
@@ -35,6 +35,11 @@ public class Subtask extends Task {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), epicId);
+    }
+
+    @Override
+    public Type getType() {
+        return Type.SUBTASK;
     }
 
     public Integer getEpicId() {

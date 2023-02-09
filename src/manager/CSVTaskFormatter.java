@@ -27,34 +27,33 @@ public class CSVTaskFormatter {
      */
     public static Task fromStringTask(String value) {
         String[] splitTo = value.split(", ");
-        if (splitTo[6].equals("null")) {
-            return new Task(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2], Status.valueOf(splitTo[3]),
-                    splitTo[4], null, Integer.parseInt(splitTo[7]));
+        if (splitTo[6].equals("null") && splitTo[7].equals("null")) {
+            return new Task(Integer.parseInt(splitTo[0]), splitTo[2], Status.valueOf(splitTo[3]),
+                    splitTo[4], null, null);
         } else {
-            return new Task(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2], Status.valueOf(splitTo[3]),
+            return new Task(Integer.parseInt(splitTo[0]), splitTo[2], Status.valueOf(splitTo[3]),
                     splitTo[4], LocalDateTime.parse(splitTo[6]), Integer.parseInt(splitTo[7]));
         }
     }
 
     public static Epic fromStringEpic(String value) {
         String[] splitTo = value.split(", ");
-        if (splitTo[6].equals("null")) {
-            return new Epic(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2], Status.valueOf(splitTo[3]),
-                    splitTo[4], null, Integer.parseInt(splitTo[7]));
+        if (splitTo[6].equals("null") && splitTo[7].equals("null")) {
+            return new Epic(Integer.parseInt(splitTo[0]), splitTo[2], Status.valueOf(splitTo[3]),
+                    splitTo[4], null, null);
         } else {
-            return new Epic(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2], Status.valueOf(splitTo[3]),
+            return new Epic(Integer.parseInt(splitTo[0]), splitTo[2], Status.valueOf(splitTo[3]),
                     splitTo[4], LocalDateTime.parse(splitTo[6]), Integer.parseInt(splitTo[7]));
         }
     }
 
     public static Subtask fromStringSubtask(String value) {
         String[] splitTo = value.split(", ");
-        if (splitTo[6].equals("null")) {
-            return new Subtask(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2],
-                    Status.valueOf(splitTo[3]), splitTo[4], Integer.parseInt(splitTo[5]), null,
-                    Integer.parseInt(splitTo[7]));
+        if (splitTo[6].equals("null") && splitTo[7].equals("null")) {
+            return new Subtask(Integer.parseInt(splitTo[0]), splitTo[2],
+                    Status.valueOf(splitTo[3]), splitTo[4], Integer.parseInt(splitTo[5]), null, null);
         } else {
-            return new Subtask(Integer.parseInt(splitTo[0]), Type.valueOf(splitTo[1]), splitTo[2],
+            return new Subtask(Integer.parseInt(splitTo[0]), splitTo[2],
                     Status.valueOf(splitTo[3]), splitTo[4], Integer.parseInt(splitTo[5]), LocalDateTime.parse(splitTo[6]),
                     Integer.parseInt(splitTo[7]));
         }

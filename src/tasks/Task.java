@@ -5,7 +5,6 @@ import java.time.Month;
 import java.util.Objects;
 
 public class Task {
-    private Type type;
     private String nameTask;
     private String description;
     private Status status;
@@ -29,9 +28,9 @@ public class Task {
         this.status = status;
     }
 
-    public Task(Integer id, Type type, String nameTask, Status status, String description, LocalDateTime startTime, Integer
+    public Task(Integer id, String nameTask, Status status, String description, LocalDateTime startTime, Integer
             duration) {
-        this.type = type;
+//        this.type = type;
         this.nameTask = nameTask;
         this.description = description;
         this.status = status;
@@ -73,11 +72,7 @@ public class Task {
     }
 
     public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
+        return Type.TASK;
     }
 
     public Integer getEpicId() {
@@ -109,20 +104,20 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return duration == task.duration && type == task.type && Objects.equals(nameTask, task.nameTask) &&
+        return duration == task.duration && Objects.equals(nameTask, task.nameTask) &&
                 Objects.equals(description, task.description) && status == task.status && Objects.equals(id, task.id)
                 && Objects.equals(epicId, task.epicId) && Objects.equals(startTime, task.startTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, nameTask, description, status, id, epicId, duration, startTime);
+        return Objects.hash(nameTask, description, status, id, epicId, duration, startTime);
     }
 
     @Override
     public String toString() {
         return "tasks.Task{" +
-                "type='" + type + '\'' +
+                "type='" + getType() + '\'' +
                 ", id=" + id + '\'' +
                 ", nameTask='" + nameTask + '\'' +
                 ", description='" + description + '\'' +

@@ -1,5 +1,6 @@
 package manager;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,10 +78,10 @@ public class InMemoryTaskManager implements TaskManager {
             storage.getPrioritizedTasks().remove(storage.getSubtasks().get(id));
         }
         storage.getSubtasks().clear();
-        for (Integer i : storage.getEpics().keySet()) {
-            storage.getEpics().get(i).getSubtasksList().clear();
-            updateEpicStatus(i);
-            updateEpicTime(i);
+        for (Integer epicId : storage.getEpics().keySet()) {
+            storage.getEpics().get(epicId).getSubtasksList().clear();
+            updateEpicStatus(epicId);
+            updateEpicTime(epicId);
         }
     }
 
@@ -134,7 +135,6 @@ public class InMemoryTaskManager implements TaskManager {
         int id = storage.getId() + 1;
         storage.setId(id);
         task.setId(id);
-        task.setType(Type.TASK);
         storage.setTasks(id, task);
         storage.getPrioritizedTasks().add(task);
         return task.getId();
@@ -145,7 +145,6 @@ public class InMemoryTaskManager implements TaskManager {
         int id = storage.getId() + 1;
         storage.setId(id);
         epic.setId(id);
-        epic.setType(Type.EPIC);
         storage.setEpics(id, epic);
         return epic.getId();
     }
@@ -159,7 +158,6 @@ public class InMemoryTaskManager implements TaskManager {
             int id = storage.getId() + 1;
             storage.setId(id);
             subtask.setId(id);
-            subtask.setType(Type.SUBTASK);
             storage.setSubtasks(id, subtask, epicId);
             subtask.setEpicId(epicId);
             updateEpicStatus(epicId);
@@ -185,7 +183,6 @@ public class InMemoryTaskManager implements TaskManager {
             }
             storage.setTasks(id, task);
             storage.getTasks().get(id).setId(id);
-            task.setType(Type.TASK);
             storage.getPrioritizedTasks().add(task);
             return storage.getTasks().get(id);
         }
@@ -194,11 +191,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic updateEpic(String nameTask, String description, int id) {
+        Epic epic = storage.getEpics().get(id);
         if (storage.getEpics().containsKey(id)) {
-            storage.getEpics().get(id).setNameTask(nameTask);
-            storage.getEpics().get(id).setDescription(description);
-            storage.getEpics().get(id).setType(Type.EPIC);
-            return storage.getEpics().get(id);
+            epic.setNameTask(nameTask);
+            epic.setDescription(description);
+            return epic;
         }
         return null;
     }
@@ -215,7 +212,6 @@ public class InMemoryTaskManager implements TaskManager {
                 }
                 storage.setSubtasks(id, subtask, epicId);
                 storage.getSubtasks().get(id).setId(id);
-                subtask.setType(Type.SUBTASK);
                 subtask.setEpicId(epicId);
                 updateEpicStatus(epicId);
                 updateEpicTime(epicId);
@@ -310,12 +306,36 @@ public class InMemoryTaskManager implements TaskManager {
         epic.zeroingTime();
         for (Integer i : epic.getSubtasksList()) {
             Subtask subtask = storage.getSubtasks().get(i);
-            if (subtask.getStartTime() != null) {
-                LocalDateTime startTimeSubtask = subtask.getStartTime();
+            LocalDateTime startTimeSubtask = subtask.getStartTime();
+            LocalDateTime startTimeEpic = epic.getStartTime();
+            LocalDateTime endTimeEpic = epic.getEndTime();
+            Integer durationSubtask = subtask.getDuration();
+            Integer durationEpic = epic.getDuration();
+
+            if (startTimeSubtask != null && durationSubtask != null) {
                 LocalDateTime endTimeSubtask = subtask.getEndTime();
-                epic.setStartTime(startTimeSubtask);
-                epic.setEndTime(endTimeSubtask);
-                epic.setDuration();
+
+                if (startTimeEpic != null) {
+                    if (startTimeSubtask.isBefore(startTimeEpic)) {
+                        epic.setStartTime(startTimeSubtask);
+                    }
+                } else {
+                    epic.setStartTime(startTimeSubtask);
+                }
+
+                if (endTimeEpic != null) {
+                    if (endTimeSubtask.isAfter(endTimeEpic)) {
+                        epic.setEndTime(endTimeSubtask);
+                    }
+                } else {
+                    epic.setEndTime(endTimeSubtask);
+                }
+
+                if (durationEpic == null) {
+                    epic.setDuration(durationSubtask);
+                } else {
+                    epic.setDuration(durationEpic + durationSubtask);
+                }
             }
         }
     }
@@ -327,7 +347,7 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<Task>(storage.getPrioritizedTasks());
     }
 
-    protected Boolean checkTimeIsFree(Task task) {
+    protected boolean checkTimeIsFree(Task task) {
         for (Task t : storage.getPrioritizedTasks()) {
             if (t.getStartTime() == null || task.getStartTime() == null) {
                 continue;

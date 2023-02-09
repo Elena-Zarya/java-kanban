@@ -29,10 +29,10 @@ public class FileBackedTasksManagerTest extends TaskManagerTest {
     }
 
     @AfterEach
-    public void newFile(){
+    public void newFile() {
         try {
             new FileWriter(saveFile);
-        } catch (IOException e){
+        } catch (IOException e) {
             throw new ManagerSaveException("Произошла ошибка при создании файла");
         }
     }

@@ -415,29 +415,28 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Subtask subtask2 = new Subtask("Подзадача 2", "Описание 2", NEW, 30, 2023, FEBRUARY, 5, 14, 30, epicId);
         final int subtask2Id = manager.addSubtask(subtask2, epicId);
 
-        int durationEpic = manager.getEpic(epicId).getDuration();
-        assertEquals(270, durationEpic, "неверная продолжительность эпика");
+        Integer durationEpic = manager.getEpic(epicId).getDuration();
+        assertEquals(60, durationEpic, "неверная продолжительность эпика");
 
         Subtask subtask3 = new Subtask("Подзадача 3", "Описание 3", NEW, 30, 2023, FEBRUARY, 5, 11, 30, epicId);
         final int subtask3Id = manager.addSubtask(subtask3, epicId);
 
         int duration2Epic = manager.getEpic(epicId).getDuration();
-        assertEquals(270, duration2Epic, "неверная продолжительность эпика");
+        assertEquals(90, duration2Epic, "неверная продолжительность эпика");
 
-        Subtask subtask4 = new Subtask("Подзадача 4", "Описание 4", NEW, 30, 2023, FEBRUARY, 5, 12, 30, epicId);
+        Subtask subtask4 = new Subtask("Подзадача 4", "Описание 4", NEW, 15, 2023, FEBRUARY, 5, 12, 30, epicId);
         manager.updateSubtask(subtask4, subtask2Id, epicId);
 
         int duration3Epic = manager.getEpic(epicId).getDuration();
-        assertEquals(150, duration3Epic, "неверная продолжительность эпика");
+        assertEquals(75, duration3Epic, "неверная продолжительность эпика");
 
         manager.deleteSubtask(subtask2Id, epicId);
         int duration4Epic = manager.getEpic(epicId).getDuration();
-        assertEquals(90, duration4Epic, "неверная продолжительность эпика");
+        assertEquals(60, duration4Epic, "неверная продолжительность эпика");
 
         manager.clearSubtasks();
         Integer duration5Epic = manager.getEpic(epicId).getDuration();
         assertEquals(null, duration5Epic, "неверная продолжительность эпика");
-
     }
 
     @Test
