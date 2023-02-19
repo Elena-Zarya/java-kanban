@@ -1,45 +1,43 @@
 package manager;
 
+import Server.KVServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.Month.FEBRUARY;
-import static manager.FileBackedTasksManager.loadFromFile;
+import static manager.HttpTaskManager.loadFromHttp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tasks.Status.NEW;
 
-public class FileBackedTasksManagerTest extends TaskManagerTest {
-    File saveFile;
+public class HttpTaskManagerTest extends TaskManagerTest {
+    URI uri;
+    KVServer kvServer;
 
     @BeforeEach
-    public void setManagerTest() {
-        saveFile = new File("fileToSave.csv");
-        manager = Managers.getFileBackedTasksManager();
+    public void setManager() throws IOException {
+        kvServer = new KVServer();
+        kvServer.start();
+
+        uri = URI.create("http://localhost:8078/");
+        manager = Managers.getHttpTaskManager(uri, "1");
     }
 
     @AfterEach
-    public void newFile() {
-        try {
-            new FileWriter(saveFile);
-        } catch (IOException e) {
-            throw new ManagerSaveException("Произошла ошибка при создании файла");
-        }
+    public void stop() {
+        kvServer.stop();
     }
 
     @Test
-    public void saveTest() {
-        manager = loadFromFile(saveFile);
+    public void SaveTest() {
         List<Task> tasks = manager.getAllTask();
         List<Epic> epics = manager.getAllEpic();
         List<Subtask> subtasks = manager.getAllSubtask();
@@ -50,14 +48,14 @@ public class FileBackedTasksManagerTest extends TaskManagerTest {
         Task task = new Task("Задача 1", "описание", NEW, 10, 2023, FEBRUARY, 6, 12, 30);
         int taskId = manager.addTask(task);
         Task savedTasks = manager.getTask(taskId);
-        TaskManager managerTest = loadFromFile(saveFile);
+        TaskManager managerTest =  loadFromHttp(uri, "1");
         Task loadTask = managerTest.getTask(taskId);
         assertEquals(savedTasks, loadTask, "Задачи не совпадают");
 
         Epic epic = new Epic("Эпик 1", "описание", NEW);
         final int epicId = manager.addEpic(epic);
         Epic savedEpic = manager.getEpic(epicId);
-        managerTest = loadFromFile(saveFile);
+        managerTest =  loadFromHttp(uri, "1");
         Epic loadEpic = managerTest.getEpic(epicId);
         assertEquals(savedEpic, loadEpic, "Эпики не совпадают");
 
@@ -69,9 +67,8 @@ public class FileBackedTasksManagerTest extends TaskManagerTest {
     }
 
     @Test
-    public void loadFromFileTest() {
-        TaskManager manager = loadFromFile(saveFile);
-
+    public void loadFromHttpTest() {
+        manager = Managers.getHttpTaskManager(uri, "2");
         List<Task> loadTasks = manager.getAllTask();
         List<Epic> loadEpics = manager.getAllEpic();
         List<Subtask> loadSubtasks = manager.getAllSubtask();
@@ -86,15 +83,21 @@ public class FileBackedTasksManagerTest extends TaskManagerTest {
         Task task = new Task("Задача 1", "описание", NEW, 10, 2023, FEBRUARY, 6, 12, 30);
         int taskId = manager.addTask(task);
         Task savedTasks = manager.getTask(taskId);
-        TaskManager managerTest = loadFromFile(saveFile);
+        TaskManager managerTest =  loadFromHttp(uri, "2");
         Task loadTask = managerTest.getTask(taskId);
         assertEquals(savedTasks, loadTask, "Задачи не совпадают");
 
         Epic epic = new Epic("Эпик 1", "описание", NEW);
         final int epicId = manager.addEpic(epic);
         Epic savedEpic = manager.getEpic(epicId);
-        managerTest = loadFromFile(saveFile);
+        managerTest =  loadFromHttp(uri, "2");
         Epic loadEpic = managerTest.getEpic(epicId);
         assertEquals(savedEpic, loadEpic, "Эпики не совпадают");
+
+        List<Task> historySave = new ArrayList<>();
+        historySave.add(task);
+        historySave.add(epic);
+        historyLoad = manager.getHistory();
+        assertEquals(historyLoad, historySave, "Истории просмотров не совпадают");
     }
 }

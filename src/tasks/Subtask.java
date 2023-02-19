@@ -5,12 +5,12 @@ import java.time.Month;
 import java.util.Objects;
 
 public class Subtask extends Task {
-    private Integer epicId;
+    private Integer epicIds;
 
     public Subtask(String nameTask, String description, Status status, int duration, int year, Month month, int
             dayOfMonth, int hour, int minute, Integer epicId) {
         super(nameTask, description, status, duration, year, month, dayOfMonth, hour, minute);
-        this.epicId = epicId;
+        this.epicIds = epicId;
     }
 
     public Subtask(String nameTask, String description, Status status) {
@@ -20,7 +20,7 @@ public class Subtask extends Task {
     public Subtask(Integer id, String nameTask, Status status, String description, Integer epicId,
                    LocalDateTime startTime, Integer duration) {
         super(id, nameTask, status, description, startTime, duration);
-        this.epicId = epicId;
+        this.epicIds = epicId;
     }
 
     @Override
@@ -29,12 +29,12 @@ public class Subtask extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Subtask subtask = (Subtask) o;
-        return Objects.equals(epicId, subtask.epicId);
+        return Objects.equals(epicIds, subtask.epicIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), epicId);
+        return Objects.hash(super.hashCode(), epicIds);
     }
 
     @Override
@@ -43,11 +43,11 @@ public class Subtask extends Task {
     }
 
     public Integer getEpicId() {
-        return epicId;
+        return epicIds;
     }
 
     public void setEpicId(int epicId) {
-        this.epicId = epicId;
+        this.epicIds = epicId;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class Subtask extends Task {
                 ", status='" + getStatus() + '\'' +
                 ", startTime=" + getStartTime() + '\'' +
                 ", duration=" + getDuration() + '\'' +
-                ", epicId=" + epicId +
+                ", epicIds=" + epicIds +
                 '}';
     }
 }

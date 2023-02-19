@@ -3,6 +3,7 @@ package manager;
 import tasks.*;
 
 import java.io.*;
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,10 +22,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println(manager.getHistory());
     }
 
-    private final File file;
+    private File file;
+    private URI uri;
 
     public FileBackedTasksManager(File file) {
         this.file = file;
+    }
+
+    public FileBackedTasksManager(URI uri) {
+        this.uri = uri;
     }
 
     @Override
@@ -167,49 +173,53 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try {
             final String csv = Files.readString(file.toPath());
             final String[] lines = csv.split("\r?\n|\r");
-            HashMap<Integer, Task> tasksAll = new HashMap<>();
-
-            boolean flag = true;
-            for (int i = 1; i < lines.length; i++) {
-                if (lines[i].isEmpty()) {
-                    flag = false;
-                    continue;
-                }
-                if (flag) {
-                    if (lines[i].contains("EPIC")) {
-                        Epic epic = fromStringEpic(lines[i]);
-                        storage.setEpics(epic.getId(), epic);
-                        tasksAll.put(epic.getId(), epic);
-                    } else if (lines[i].contains("SUBTASK")) {
-                        Subtask subtask = fromStringSubtask(lines[i]);
-                        storage.setSubtasks(subtask.getId(), subtask, subtask.getEpicId());
-                        tasksAll.put(subtask.getId(), subtask);
-                    } else if (lines[i].contains("TASK")) {
-                        Task task = fromStringTask(lines[i]);
-                        storage.setTasks(task.getId(), task);
-                        tasksAll.put(task.getId(), task);
-                    }
-                } else {
-                    List<Integer> listId = historyFromString(lines[i]);
-                    for (Integer id : listId) {
-                        if (storage.getTasks().containsKey(id)) {
-                            Task task = storage.getTasks().get(id);
-                            fileManager.getHistoryManager().add(task);
-                        } else if (storage.getEpics().containsKey(id)) {
-                            Epic task = storage.getEpics().get(id);
-                            fileManager.getHistoryManager().add(task);
-                        } else if (storage.getSubtasks().containsKey(id)) {
-                            Subtask task = storage.getSubtasks().get(id);
-                            fileManager.getHistoryManager().add(task);
-                        }
-                    }
-                }
-                int maxId = Collections.max(tasksAll.keySet());
-                storage.setId(maxId);
-            }
+            load(lines, storage, fileManager);
         } catch (IOException e) {
             throw new ManagerReaderException("Произошла ошибка во время чтения файла");
         }
         return fileManager;
+    }
+
+    public static void load(String[] lines, Storage storage, FileBackedTasksManager fileManager) {
+        HashMap<Integer, Task> tasksAll = new HashMap<>();
+
+        boolean flag = true;
+        for (int i = 1; i < lines.length; i++) {
+            if (lines[i].isEmpty()) {
+                flag = false;
+                continue;
+            }
+            if (flag) {
+                if (lines[i].contains("EPIC")) {
+                    Epic epic = fromStringEpic(lines[i]);
+                    storage.setEpics(epic.getId(), epic);
+                    tasksAll.put(epic.getId(), epic);
+                } else if (lines[i].contains("SUBTASK")) {
+                    Subtask subtask = fromStringSubtask(lines[i]);
+                    storage.setSubtasks(subtask.getId(), subtask, subtask.getEpicId());
+                    tasksAll.put(subtask.getId(), subtask);
+                } else if (lines[i].contains("TASK")) {
+                    Task task = fromStringTask(lines[i]);
+                    storage.setTasks(task.getId(), task);
+                    tasksAll.put(task.getId(), task);
+                }
+            } else {
+                List<Integer> listId = historyFromString(lines[i]);
+                for (Integer id : listId) {
+                    if (storage.getTasks().containsKey(id)) {
+                        Task task = storage.getTasks().get(id);
+                        fileManager.getHistoryManager().add(task);
+                    } else if (storage.getEpics().containsKey(id)) {
+                        Epic task = storage.getEpics().get(id);
+                        fileManager.getHistoryManager().add(task);
+                    } else if (storage.getSubtasks().containsKey(id)) {
+                        Subtask task = storage.getSubtasks().get(id);
+                        fileManager.getHistoryManager().add(task);
+                    }
+                }
+            }
+            int maxId = Collections.max(tasksAll.keySet());
+            storage.setId(maxId);
+        }
     }
 }

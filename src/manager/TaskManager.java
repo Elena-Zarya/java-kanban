@@ -1,6 +1,5 @@
 package manager;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import tasks.*;
@@ -52,4 +51,6 @@ public interface TaskManager {
     List<Task> getPrioritizedTasks();
 
     void updateEpicTime(int epicId);
+
+    Storage getStorage();
 }

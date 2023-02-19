@@ -1,14 +1,13 @@
 package tasks;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
     private final ArrayList<Integer> subtasksList;
-    private Integer duration;
-    private LocalDateTime startTime;
+    private Integer durationEpic;
+    private LocalDateTime startTimeEpic;
     private LocalDateTime endTime;
 
     public Epic(String nameTask, String description, Status status) {
@@ -29,21 +28,21 @@ public class Epic extends Task {
 
     @Override
     public Integer getDuration() {
-        return duration;
+        return durationEpic;
     }
 
     @Override
     public LocalDateTime getStartTime() {
-        return startTime;
+        return startTimeEpic;
     }
 
     @Override
     public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
+        this.startTimeEpic = startTime;
     }
 
     public void setDuration(int duration) {
-        this.duration = duration;
+        this.durationEpic = duration;
     }
 
     public LocalDateTime getEndTime() {
@@ -60,13 +59,13 @@ public class Epic extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
-        return duration == epic.duration && Objects.equals(subtasksList, epic.subtasksList) && Objects.equals(startTime,
-                epic.startTime) && Objects.equals(endTime, epic.endTime);
+        return durationEpic == epic.durationEpic && Objects.equals(subtasksList, epic.subtasksList) && Objects.equals(startTimeEpic,
+                epic.startTimeEpic) && Objects.equals(endTime, epic.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), subtasksList, duration, startTime, endTime);
+        return Objects.hash(super.hashCode(), subtasksList, durationEpic, startTimeEpic, endTime);
     }
 
     @Override
@@ -77,8 +76,8 @@ public class Epic extends Task {
                 ", nameTask='" + getNameTask() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status='" + getStatus() + '\'' +
-                ", startTime=" + getStartTime() + '\'' +
-                ", duration=" + getDuration() + '\'' +
+                ", startTimeEpic=" + getStartTime() + '\'' +
+                ", durationEpic=" + getDuration() + '\'' +
                 ", subtasksList.size=" + subtasksList.size() +
                 '}';
     }
@@ -94,8 +93,8 @@ public class Epic extends Task {
     }
 
     public void zeroingTime() {
-        duration = null;
-        startTime = null;
+        durationEpic = null;
+        startTimeEpic = null;
         endTime = null;
     }
 }

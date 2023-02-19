@@ -1,6 +1,5 @@
 package manager;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +31,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getAllSubtask() {
         return new ArrayList<>(storage.getSubtasks().values());
+    }
+
+    public Storage getStorage() {
+        return storage;
     }
 
     /**
