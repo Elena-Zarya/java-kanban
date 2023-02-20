@@ -1,7 +1,7 @@
 package server;
 
-import Server.HttpTaskServer;
-import Server.KVServer;
+import server.HttpTaskServer;
+import server.KVServer;
 import com.google.gson.Gson;
 import manager.HttpTaskManager;
 import org.junit.jupiter.api.AfterEach;

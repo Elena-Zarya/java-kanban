@@ -1,7 +1,7 @@
 package manager;
 
-import Server.KVServer;
-import Server.KVTaskClient;
+import server.KVServer;
+import server.KVTaskClient;
 
 import java.io.IOException;
 import java.net.URI;
