@@ -1,9 +1,9 @@
 package manager;
 
-import server.KVServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.KVServer;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.Month.FEBRUARY;
-import static manager.HttpTaskManager.loadFromHttp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static tasks.Status.NEW;
 
 public class HttpTaskManagerTest extends TaskManagerTest {
     URI uri;
     KVServer kvServer;
+    HttpTaskManager httpTaskManager;
 
     @BeforeEach
     public void setManager() throws IOException {
@@ -29,6 +29,7 @@ public class HttpTaskManagerTest extends TaskManagerTest {
 
         uri = URI.create("http://localhost:8078/");
         manager = Managers.getHttpTaskManager(uri, "1");
+        httpTaskManager = new HttpTaskManager(uri, "1");
     }
 
     @AfterEach
@@ -48,14 +49,14 @@ public class HttpTaskManagerTest extends TaskManagerTest {
         Task task = new Task("Задача 1", "описание", NEW, 10, 2023, FEBRUARY, 6, 12, 30);
         int taskId = manager.addTask(task);
         Task savedTasks = manager.getTask(taskId);
-        TaskManager managerTest =  loadFromHttp(uri, "1");
+        TaskManager managerTest = httpTaskManager.loadFromHttp(uri, "1");
         Task loadTask = managerTest.getTask(taskId);
         assertEquals(savedTasks, loadTask, "Задачи не совпадают");
 
         Epic epic = new Epic("Эпик 1", "описание", NEW);
         final int epicId = manager.addEpic(epic);
         Epic savedEpic = manager.getEpic(epicId);
-        managerTest =  loadFromHttp(uri, "1");
+        managerTest = httpTaskManager.loadFromHttp(uri, "1");
         Epic loadEpic = managerTest.getEpic(epicId);
         assertEquals(savedEpic, loadEpic, "Эпики не совпадают");
 
@@ -83,14 +84,14 @@ public class HttpTaskManagerTest extends TaskManagerTest {
         Task task = new Task("Задача 1", "описание", NEW, 10, 2023, FEBRUARY, 6, 12, 30);
         int taskId = manager.addTask(task);
         Task savedTasks = manager.getTask(taskId);
-        TaskManager managerTest =  loadFromHttp(uri, "2");
+        TaskManager managerTest = httpTaskManager.loadFromHttp(uri, "2");
         Task loadTask = managerTest.getTask(taskId);
         assertEquals(savedTasks, loadTask, "Задачи не совпадают");
 
         Epic epic = new Epic("Эпик 1", "описание", NEW);
         final int epicId = manager.addEpic(epic);
         Epic savedEpic = manager.getEpic(epicId);
-        managerTest =  loadFromHttp(uri, "2");
+        managerTest = httpTaskManager.loadFromHttp(uri, "2");
         Epic loadEpic = managerTest.getEpic(epicId);
         assertEquals(savedEpic, loadEpic, "Эпики не совпадают");
 

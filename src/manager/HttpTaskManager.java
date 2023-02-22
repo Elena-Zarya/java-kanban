@@ -1,17 +1,18 @@
 package manager;
 
-import server.KVServer;
 import server.KVTaskClient;
 
 import java.io.IOException;
 import java.net.URI;
 
 public class HttpTaskManager extends FileBackedTasksManager {
-    private static KVTaskClient client;
-    private static String key;
+    private final KVTaskClient client;
+    private final String key;
+    private final URI uri;
 
     public HttpTaskManager(URI uri, String key) {
         super(uri);
+        this.uri = uri;
         this.key = key;
         try {
             client = new KVTaskClient(uri);
@@ -38,7 +39,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
                 savedTasks.append(formatter.toString(storage.getSubtasks().get(i)) + "\n");
             }
             savedTasks.append("\n");
-            savedTasks.append(formatter.historyToString(getHistoryManager()));
+            savedTasks.append(CSVTaskFormatter.historyToString(getHistoryManager()));
 
             client.put(key, savedTasks.toString());
         } catch (IOException | InterruptedException e) {
@@ -46,7 +47,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         }
     }
 
-    public static HttpTaskManager loadFromHttp(URI uri, String key) {
+    public HttpTaskManager loadFromHttp(URI uri, String key) {
         HttpTaskManager httpTaskManager = new HttpTaskManager(uri, key);
         Storage storage = httpTaskManager.storage;
 

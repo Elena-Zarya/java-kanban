@@ -1,8 +1,13 @@
 package manager;
 
-import tasks.*;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.Collections;
@@ -23,14 +28,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private File file;
-    private URI uri;
 
     public FileBackedTasksManager(File file) {
         this.file = file;
     }
 
     public FileBackedTasksManager(URI uri) {
-        this.uri = uri;
     }
 
     @Override
@@ -155,7 +158,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 fileWriter.write(formatter.toString(storage.getSubtasks().get(i)) + "\n");
             }
             fileWriter.newLine();
-            fileWriter.write(formatter.historyToString(getHistoryManager()));
+            fileWriter.write(historyToString(getHistoryManager()));
             fileWriter.close();
         } catch (IOException e) {
             throw new ManagerSaveException("Произошла ошибка при сохранении файла");

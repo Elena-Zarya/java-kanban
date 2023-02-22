@@ -1,9 +1,12 @@
 import manager.Managers;
 import manager.TaskManager;
-import org.testng.annotations.Test;
-import tasks.*;
+import org.junit.jupiter.api.Test;
+import tasks.Epic;
+import tasks.Status;
+import tasks.Subtask;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class EpicStatusTest {
     private final TaskManager manager = Managers.getDefault();

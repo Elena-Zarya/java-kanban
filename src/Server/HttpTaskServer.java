@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import manager.HttpTaskManager;
 import manager.Managers;
 import manager.Storage;
 import manager.TaskManager;
@@ -21,16 +22,16 @@ import java.util.regex.Pattern;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HttpTaskServer {
-    private Storage storage;
-
-    private final TaskManager taskManager;
+    private final Storage storage;
+    private final HttpTaskManager taskManager;
     private final Gson gson;
-    private HttpServer server;
+    private final HttpServer server;
     private static final int PORT = 8088;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     public HttpTaskServer(URI uri, String key) throws IOException {
-        taskManager = Managers.getHttpTaskManager(uri, key);
+        taskManager = (HttpTaskManager) Managers.getHttpTaskManager(uri, key);
+        taskManager.loadFromHttp(uri, key);
         gson = new Gson();
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/tasks", this::handleTasks);
